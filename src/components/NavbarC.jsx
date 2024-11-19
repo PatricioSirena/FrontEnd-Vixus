@@ -6,10 +6,11 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
 
 
 const NavbarC = () => {
+
     const navigate = useNavigate()
     const token = JSON.parse(sessionStorage.getItem('token'))
     const role = JSON.parse(sessionStorage.getItem('role'))
-
+    
     const handleClickLogout = (e) => {
         e.preventDefault()
         sessionStorage.removeItem('token')
@@ -31,32 +32,37 @@ const NavbarC = () => {
                             <NavLink to="*" className={'nav-link'}>Contacto</NavLink>
                         </Nav>
                         {
-                            !token &&
-                            <>
-                                <Nav className="ms-auto">
-                                    <NavLink to="/login" className={'nav-link'}>Iniciar Sesion</NavLink>
-                                    <NavLink to="/register" className={'nav-link'}>Registro</NavLink>
-                                </Nav>
-                            </>
-                        }
-                        {role === 'admin' &&
-                            <>
-                                <DropdownButton title="Admin">
-                                    <NavLink to="/adminProducts" className={'btn btn-light'}>Panel de Productos</NavLink>
-                                    <NavLink to="/adminUsers" className={'btn btn-light'}>Panel de Usuarios</NavLink>
-                                    <NavLink to='#' onClick={handleClickLogout} className={'btn btn-light'}>Salir</NavLink>
-                                </DropdownButton>
-
-                            </>
-                        }
-                        {role === 'user' &&
-                            <>
-                                <DropdownButton title="User">
-                                    <NavLink to="/userCart" className={'btn btn-light'}>Carrito</NavLink>
-                                    <NavLink to="/userFav" className={'btn btn-light'}>Favoritos</NavLink>
-                                    <NavLink to='#' onClick={handleClickLogout} className={'btn btn-light'}>Salir</NavLink>
-                                </DropdownButton>
-                            </>
+                            !token ?
+                                <>
+                                    <Nav className="ms-auto">
+                                        <NavLink to="/login" className={'nav-link'}>Iniciar Sesion</NavLink>
+                                        <NavLink to="/register" className={'nav-link'}>Registro</NavLink>
+                                    </Nav>
+                                </>
+                                :
+                                <>
+                                    <DropdownButton drop='start' title={role === 'admin' ? 'Admin' : 'User'}>
+                                        <NavLink
+                                            style={{ display: 'block' }}
+                                            to={role === 'admin' ? '/adminProducts' : '/userCart'}
+                                            className={`btn btn-light`}>
+                                            {role === 'admin' ? 'Panel de Productos' : 'Carrito'}
+                                        </NavLink>
+                                        <NavLink
+                                            style={{ display: 'block' }}
+                                            to={role === 'admin' ? '/adminUsers' : 'userFavorites'}
+                                            className={`btn btn-light`}>
+                                            {role === 'admin' ? 'Panel de Usuarios' : 'Favoritos'}
+                                        </NavLink>
+                                        <a
+                                            style={{ display: 'block' }}
+                                            to='#'
+                                            onClick={handleClickLogout}
+                                            className={'btn btn-light'}>
+                                            Salir
+                                        </a>
+                                    </DropdownButton>
+                                </>
                         }
                     </Navbar.Collapse>
                 </Container>

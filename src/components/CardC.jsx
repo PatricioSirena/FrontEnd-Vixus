@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types'
 
 
-const CardC = ({ id }) => {
+const CardC = ({ id, imgLink, infoCardtext, productId }) => {
     return (
         <>
             {
@@ -23,27 +23,25 @@ const CardC = ({ id }) => {
                     </Card>
                     : id === 'cardInfo' ?
                         <Card style={{ width: '18rem' }}>
-                            <Card.Img variant="top" src="https://www.macowens.com.ar/media/wysiwyg/banner_3_cuotas_landing_promociones_1.jpg" />
+                            <Card.Img variant="top" src={imgLink} />
                             <Card.Body style={{textAlign: 'center'}}>
-                                <Card.Title>Cuotas sin interes</Card.Title>
-                                <Card.Text>
-                                    3 Cuotas sin interes con todas las tarjetas
-                                </Card.Text>
+                                <Card.Text>{infoCardtext}</Card.Text>
                             </Card.Body>
                         </Card>
                         :
-                        <Card style={{ width: '13rem' }}>
+                        <Card style={{ width: '11rem', border: 'none', margin: '2rem'}}>
                             <Card.Img
                                 variant="top"
                                 src="https://acdn.mitiendanube.com/stores/002/026/642/products/dsc080551-2b9248b262b394707516852011784935-640-0.jpg"
                                 className="card-img"
-                                style={{ padding: '.8rem' }} />
-                            <Card.Body>
+                                style={{borderRadius: '0'}}
+                                />
+                            <Card.Body style={{padding: '.5rem'}}>
                                 <Card.Title>Card Title</Card.Title>
-                                <Card.Text>
+                                <Card.Text style={{margin: '.5rem'}}>
                                     Text
                                 </Card.Text>
-                                <Link variant="primary">Ver Producto</Link>
+                                <Link className='btn btn-dark' style={{marginBottom: '.5rem', fontSize: 'x-small'}} variant="primary">Ver Producto</Link>
                             </Card.Body>
                         </Card>
             }
@@ -52,7 +50,10 @@ const CardC = ({ id }) => {
 }
 
 CardC.propTypes = {
-    id: PropTypes.string
+    id: PropTypes.string,
+    imgLink: PropTypes.string,
+    infoCardtext: PropTypes.string,
+    productId: PropTypes.string
 }
 
 export default CardC
