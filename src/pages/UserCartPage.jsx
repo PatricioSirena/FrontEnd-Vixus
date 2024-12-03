@@ -31,7 +31,7 @@ const UserCartPage = () => {
         if(isLoading){
             getCart()
         }
-    }, [cartProducts])
+    }, [cartProducts, isLoading])
     
 
 

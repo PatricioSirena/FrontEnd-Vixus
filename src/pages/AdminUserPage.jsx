@@ -18,7 +18,7 @@ const AdminUserPage = () => {
         if (isLoading) {
             getUsers()
         }
-    }, [users])
+    }, [users,isLoading])
     
 
     return (

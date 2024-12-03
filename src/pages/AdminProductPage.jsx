@@ -8,7 +8,7 @@ const AdminProductPage = () => {
 
 
     const getStockProducts = async () =>{
-        const resultProducts = await clienteAxios.get('/products', configHeaders)
+        const resultProducts = await clienteAxios.get('/products', configHeaders)        
         setProducts(resultProducts.data)
         setIsLoading(false)
     }
@@ -17,7 +17,7 @@ const AdminProductPage = () => {
         if (isLoading) {
             getStockProducts()            
         }
-    }, [products])
+    }, [products, isLoading])
     
 
     return (
