@@ -41,18 +41,18 @@ const NavbarC = () => {
                                 </>
                                 :
                                 <>
-                                    <DropdownButton drop='start' title={role === 'admin' ? 'Admin' : 'User'}>
+                                    <DropdownButton drop='start' title={role === 'mainAdmin' ? 'Super' : role === 'admin' ? 'Admin' : 'User'}>
                                         <NavLink
                                             style={{ display: 'block' }}
-                                            to={role === 'admin' ? '/adminProducts' : '/userCart'}
+                                            to={role === 'mainAdmin' ? '/adminProducts' : role === 'admin' ? '/adminProducts' : '/userCart'}
                                             className={`btn btn-light`}>
-                                            {role === 'admin' ? 'Panel de Productos' : 'Carrito'}
+                                            {role === 'mainAdmin' ? 'Panel de Productos' : role === 'admin' ? 'Panel de Productos' :'Carrito'}
                                         </NavLink>
                                         <NavLink
                                             style={{ display: 'block' }}
-                                            to={role === 'admin' ? '/adminUsers' : 'userFavorites'}
+                                            to={role === 'mainAdmin' ? '/adminUsers' : role === 'admin' ? '/adminUsers' : 'userFavorites'}
                                             className={`btn btn-light`}>
-                                            {role === 'admin' ? 'Panel de Usuarios' : 'Favoritos'}
+                                            {role === 'mainAdmin' ? 'Panel de Usuarios' : role === 'admin' ? 'Panel de Usuarios' : 'Favoritos'}
                                         </NavLink>
                                         <a
                                             style={{ display: 'block' }}

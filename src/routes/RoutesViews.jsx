@@ -23,22 +23,22 @@ const RoutesViews = () => {
             <NavbarC />
             <Routes>
                 <Route path="/adminPage" element={
-                    <PrivateRoute routeRole={'admin'}>
+                    <PrivateRoute routeRole={['mainAdmin', 'admin']}>
                         <AdminPage />
                     </PrivateRoute>
                 }/>
                 <Route path="/adminCategory" element={
-                    <PrivateRoute routeRole={'admin'}>
+                    <PrivateRoute routeRole={['mainAdmin', 'admin']}>
                         <AdminCategoryPage />
                     </PrivateRoute>
                 }/>
-                <Route path="/adminUser" element={
-                    <PrivateRoute routeRole={'admin'}>
+                <Route path="/adminUsers" element={
+                    <PrivateRoute routeRole={['mainAdmin', 'admin']}>
                         <AdminUserPage />
                     </PrivateRoute>
                 }/>
-                <Route path="/adminProduct" element={
-                    <PrivateRoute routeRole={'admin'}>
+                <Route path="/adminProducts" element={
+                    <PrivateRoute routeRole={['mainAdmin', 'admin']}>
                         <AdminProductPage />
                     </PrivateRoute>
                 }/>

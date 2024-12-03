@@ -6,7 +6,7 @@ import clienteAxios, { configHeaders } from "../helpers/axios"
 const UserCartPage = () => {
 
     const [cartProducts, setCartProducts] = useState([])
-    const [isLoaing, setIsLoaing] = useState(true)
+    const [isLoading, setIsLoading] = useState(true)
     
     const getCart = async () =>{
         const arrayCart = [];
@@ -24,11 +24,11 @@ const UserCartPage = () => {
             }
         }        
         setCartProducts(arrayCart)
-        setIsLoaing(false)
+        setIsLoading(false)
     }
 
     useEffect(() => {
-        if(isLoaing){
+        if(isLoading){
             getCart()
         }
     }, [cartProducts])
@@ -37,7 +37,7 @@ const UserCartPage = () => {
 
     return (
         <>
-        <TableC idPage={'userCart'} array={cartProducts}/>
+        <TableC idPage={'userCart'} array={cartProducts} getCartFunction={getCart} setIsLoadingHook={setIsLoading}/>
         </>
     )
 }

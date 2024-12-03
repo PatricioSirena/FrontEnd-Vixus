@@ -10,12 +10,12 @@ const PrivateRoute = ({children, routeRole}) => {
             navigate('/')
         }, 500);
     } else {
-        if (routeRole !== userRole){
+        if (routeRole.includes(userRole)){
+            return children
+        } else{
             setTimeout(() => {
                 navigate('/')
             }, 500);
-        } else{
-            return children
         }
     }
 }
