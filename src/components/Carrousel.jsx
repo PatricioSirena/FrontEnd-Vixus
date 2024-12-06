@@ -1,7 +1,9 @@
 import Carousel from 'react-bootstrap/Carousel';
 import ExampleCarouselImage from '../components/ExampleCarouselImage'
+import PropTypes from 'prop-types'
 
-const Carrousel = () => {
+
+const Carrousel = ({idPage, productImages}) => {
 
     const images = [
         {id: 1, src: 'https://elonce-media.elonce.com/fotos-nuevo/2022/10/05/o_1664998193.jpg'},
@@ -10,6 +12,8 @@ const Carrousel = () => {
     ]
     return (
         <>
+        {
+            idPage === 'homePage' ? 
             <Carousel fade>
             {images.map((image, index) => (
                 <Carousel.Item key={index}>
@@ -17,8 +21,22 @@ const Carrousel = () => {
                 </Carousel.Item>
             ))}
         </Carousel>
+        :
+        <Carousel fade>
+        {productImages?.map((image, index) => (
+            <Carousel.Item key={index}>
+                <ExampleCarouselImage src={image} />
+            </Carousel.Item>
+        ))}
+    </Carousel>
+        }  
         </>
     )
+}
+
+Carrousel.propTypes = {
+    idPage: PropTypes.string,
+    productImages: PropTypes.array
 }
 
 export default Carrousel

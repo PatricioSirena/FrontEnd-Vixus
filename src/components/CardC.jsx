@@ -41,7 +41,7 @@ const CardC = ({ id, imgLink, infoCardtext, productId }) => {
                                 <Card.Text style={{margin: '.5rem'}}>
                                     Text
                                 </Card.Text>
-                                <Link className='btn btn-dark' style={{marginBottom: '.5rem', fontSize: 'x-small'}} variant="primary">Ver Producto</Link>
+                                <Link to={`/product/${productId}`} className='btn btn-dark' style={{marginBottom: '.5rem', fontSize: 'x-small'}} variant="primary">Ver Producto</Link>
                             </Card.Body>
                         </Card>
             }
