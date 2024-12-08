@@ -8,18 +8,41 @@ const ProductPage = () => {
     const params = useParams()
     const navigate = useNavigate()
     const [isLoading, setIsLoading] = useState(true)
+    const [isFavorite, setIsFavorite] = useState(false)
     const [product, setProduct] = useState({})
     const storageRole = JSON.parse(sessionStorage.getItem('role'))
-    
+    const token = JSON.parse(sessionStorage.getItem('token'))
+
 
     const getProduct = async () => {
-        const result = await clienteAxios.get(`/products/${params.productId}`)
-        setProduct(result.data);
-        setIsLoading(false)        
+        try {
+            const result = await clienteAxios.get(`/products/${params.productId}`)
+            setProduct(result.data);
+            await getFavorites(result.data._id)
+        } catch (error) {
+            console.log(error);
+        } 
+    }
+
+    const getFavorites = async (productId) =>{    
+        if(token){
+            try {
+                const result = await clienteAxios.get(`/products/getFavorites`, configHeaders)
+                const favorites = result.data.products            
+                if(favorites.includes(productId)){
+                    setIsFavorite(true)
+                } else {
+                    setIsFavorite(false)            
+                }
+            } catch (error) {
+                console.log(error);
+            } finally {
+                setIsLoading(false)
+            }
+        }    
     }
 
     const handleClickAddToCart = async () =>{
-        const token = JSON.parse(sessionStorage.getItem('token'))
         if(token === null){
             alert('Debe iniciar sesion')
             setTimeout(() => {
@@ -28,14 +51,13 @@ const ProductPage = () => {
         } 
         try {
             const result = await clienteAxios.post(`/products/addToCart/${product._id}`, {}, configHeaders)
-            alert(result.data.msg); 
+            alert(result.data.msg);
         } catch (error) {
             alert(error.response.data.msg);
         } 
     }
 
     const handleClickAddToFav = async () =>{
-        const token = JSON.parse(sessionStorage.getItem('token'))
         if(token === null){
             alert('Debe iniciar sesion')
             setTimeout(() => {
@@ -43,18 +65,37 @@ const ProductPage = () => {
             }, 1000);
         }
         try {
-            const result = await clienteAxios.post(`/products/addToFavorite/${product._id}`, {}, configHeaders)
+            const result = await clienteAxios.post(`/products/addToFavorite/${params.productId}`, {}, configHeaders)
             alert(result.data.msg);
+            setIsLoading(true)
+            getFavorites()
         } catch (error) {
             alert(error.response.data.msg)
         }
+    }
+    
+    const handleClickDelFromFav = async () =>{
+        if(token === null){
+            alert('Debe iniciar sesion')
+            setTimeout(() => {
+                navigate('/login')
+            }, 1000);
+        }
+            try {
+                const result = await clienteAxios.post(`/products/delFromFavorite/${params.productId}`, {}, configHeaders)
+                alert(result.data.msg);
+                setIsLoading(true)
+                getFavorites()
+            } catch (error) {
+                alert(error.response.data.msg)
+            }
     }
 
     useEffect(() => {
         if (isLoading) {
             getProduct()
         }
-    },[product, isLoading])
+    },[isLoading])
 
     return (
         <>
@@ -75,8 +116,13 @@ const ProductPage = () => {
                             <Button 
                             className="mx-3 mt-3" 
                             disabled={storageRole === 'user' ? false : storageRole === null ? false : true}
-                            onClick={() => handleClickAddToFav()}>
-                                Favorito
+                            onClick={isFavorite ? handleClickDelFromFav : handleClickAddToFav }>
+                                {   isFavorite ? 
+                                    'Borrar Fav' 
+                                    :
+                                    'Favorito'
+                                    
+                                }
                                 </Button>
                         </div>
                     </Col>
