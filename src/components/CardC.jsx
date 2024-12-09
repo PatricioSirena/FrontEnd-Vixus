@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import clienteAxios, { configHeaders } from '../helpers/axios';
 
 
-const CardC = ({ cardId, imgLink, infoCardtext, productId, productName, productPrice, mainImage, setIsLoadingHook, getFavoritesFunction }) => {
+const CardC = ({ cardId, imgLink, infoCardtext, productId, productName, productPrice, mainImage, setIsLoadingHook, getFavoritesFunction, productStock }) => {
     
     const handleClickDelFromFav = async () =>{
             try {
@@ -51,15 +51,21 @@ const CardC = ({ cardId, imgLink, infoCardtext, productId, productName, productP
                                 style={{border: 'none', height:'200px'}}
                                 />
                             <Card.Body style={{padding: '.5rem'}}>
-                                <Card.Title style={{fontSize: 'medium'}}>{productName}</Card.Title>
+                                <Card.Title title={productName} style={{fontSize: 'medium', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}>{productName}</Card.Title>
                                 <Card.Text style={{margin: '.5rem'}}>
                                     {productPrice}
+                                {
+                                    productStock <= 0  &&
+                                    <span style={{fontSize: 'x-small', marginLeft: '3em'}}>Sin stock</span>
+                                }
                                 </Card.Text>
-                                <Link to={`/product/${productId}`} className='btn btn-dark' style={{marginBottom: '.5rem', fontSize: 'x-small'}} variant="primary">Ver Producto</Link>
+                                <div className="cardButtons mb-2 mx-1" style={{display: 'flex', justifyContent: 'space-between'}}>
+                                <Link to={`/product/${productId}`} className='btn btn-dark' style={{fontSize: 'x-small', padding: '6px'}} variant="primary">Ver Producto</Link>
                                 {
                                     cardId === 'favPage' &&
-                                    <Button onClick={()=> handleClickDelFromFav(productId)}>Borrar Fav</Button>
+                                    <Button style={{fontSize: 'x-small', padding: '6px'}} onClick={()=> handleClickDelFromFav(productId)}>Borrar Fav</Button>
                                 }
+                                </div>
                             </Card.Body>
                         </Card>
             }
@@ -76,7 +82,8 @@ CardC.propTypes = {
     productPrice: PropTypes.number,
     mainImage: PropTypes.string,
     setIsLoadingHook: PropTypes.func,
-    getFavoritesFunction: PropTypes.func
+    getFavoritesFunction: PropTypes.func,
+    productStock: PropTypes.number
 }
 
 export default CardC

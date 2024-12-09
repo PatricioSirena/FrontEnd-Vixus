@@ -37,7 +37,7 @@ const UserFavoritePage = () => {
                     { favProducts.map(product =>
                         <Col key={product._id}>
                             <CardC cardId={'favPage'} productId={product._id} productName={product.name} productPrice={product.price}
-                            mainImage={product.mainPicture} setIsLoadingHook={setIsLoading} getFavoritesFunction={getFavorites}/>
+                            mainImage={product.mainPicture} setIsLoadingHook={setIsLoading} getFavoritesFunction={getFavorites} productStock={product.quantity}/>
                         </Col>
                     )
                     }

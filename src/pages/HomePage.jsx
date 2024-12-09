@@ -53,7 +53,7 @@ const HomePage = () => {
                             <Col key={product._id}>
                                 <CardC cardId={'productCard'} productId={product._id} 
                                 productName={product.name} productPrice={product.price}
-                                mainImage={product.mainPicture}/>
+                                mainImage={product.mainPicture} productStock={product.quantity}/>
                             </Col>
                         )
                     }
