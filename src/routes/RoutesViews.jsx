@@ -15,6 +15,7 @@ import AboutUsPage from '../pages/AboutUsPage'
 import CategoryPage from '../pages/CategoryPage'
 import ErrorPage from '../pages/ErrorPage'
 import ProductPage from '../pages/ProductPage'
+import SearchPage from "../pages/SearchPage"
 
 
 const RoutesViews = () => {
@@ -56,7 +57,8 @@ const RoutesViews = () => {
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/aboutUs" element={<AboutUsPage />} />
-                <Route path="/category/:categpryId" element={<CategoryPage />} />
+                <Route path="/products/:toSearch" element={<SearchPage />} />
+                <Route path="/category/:categoryId" element={<CategoryPage />} />
                 <Route path="/product/:productId" element={<ProductPage />} />
                 <Route path="*" element={<ErrorPage />} />
             </Routes>

@@ -1,12 +1,14 @@
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import { NavLink, useNavigate } from 'react-router-dom'
+import {  NavLink, useNavigate } from 'react-router-dom'
 import DropdownButton from 'react-bootstrap/DropdownButton';
+import { Button, Form } from 'react-bootstrap';
+import { useState } from 'react';
 
 
 const NavbarC = () => {
-
+    const [toSearch, setToSearch] = useState('')
     const navigate = useNavigate()
     const token = JSON.parse(sessionStorage.getItem('token'))
     const role = JSON.parse(sessionStorage.getItem('role'))
@@ -17,6 +19,17 @@ const NavbarC = () => {
         sessionStorage.removeItem('role')
         sessionStorage.removeItem('userId')
         navigate('/')
+    }
+
+    const handleChangeSearchKeyWord = (ev) =>{
+        setToSearch(ev.target.value)        
+    }
+
+    const handleClickSearch = () =>{
+        if(toSearch){
+            navigate(`/products/${toSearch}`)
+            setToSearch('')
+        }
     }
 
     return (
@@ -31,6 +44,12 @@ const NavbarC = () => {
                             <NavLink to="*" className={'nav-link'}>Sobre Nosotros</NavLink>
                             <NavLink to="*" className={'nav-link'}>Contacto</NavLink>
                         </Nav>
+                        <Form>
+                            <Form.Group style={{display: 'flex', margin: '0 1em'}}>
+                                <Form.Control type='text' placeholder='Buscar' value={toSearch} name='keyWord' onChange={handleChangeSearchKeyWord}/>
+                                <Button onClick={handleClickSearch}>Buscar</Button>
+                            </Form.Group>
+                        </Form>
                         {
                             !token ?
                                 <>
