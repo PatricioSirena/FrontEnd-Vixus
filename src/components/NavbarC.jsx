@@ -27,7 +27,7 @@ const NavbarC = () => {
 
     const handleClickSearch = () =>{
         if(toSearch){
-            navigate(`/products/${toSearch}`)
+            navigate(`/searchPage/${toSearch}`)
             setToSearch('')
         }
     }
@@ -45,7 +45,7 @@ const NavbarC = () => {
                             <NavLink to="*" className={'nav-link'}>Contacto</NavLink>
                         </Nav>
                         <Form>
-                            <Form.Group style={{display: 'flex', margin: '0 1em'}}>
+                            <Form.Group style={{display: 'flex', margin: '0 1em'}} controlId='formBasicSearch'>
                                 <Form.Control type='text' placeholder='Buscar' value={toSearch} name='keyWord' onChange={handleChangeSearchKeyWord}/>
                                 <Button onClick={handleClickSearch}>Buscar</Button>
                             </Form.Group>
