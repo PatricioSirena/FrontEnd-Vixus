@@ -24,8 +24,8 @@ const FormC = ({ idPage }) => {
             return alert('Las contraseñas no son iguales')
         }
         try {
-            await clienteAxios.post('/users', { fullName, email, password, phone})
-            alert('Usuario registrado, redirigeindo a login')
+            const result = await clienteAxios.post('/users', { fullName, email, password, phone})
+            alert(result.data.msg)
             setTimeout(() => {
                 navigate('/login')
             }, 1000);

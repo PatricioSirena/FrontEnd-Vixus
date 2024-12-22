@@ -1,17 +1,18 @@
 import Table from 'react-bootstrap/Table';
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
-import { Button, Container } from 'react-bootstrap';
+import { Button, Col, Container, Row } from 'react-bootstrap';
 import PropTypes from 'prop-types';
-import clienteAxios, { configHeaders } from '../helpers/axios';
+import clienteAxios, { configHeaders, configHeadersImage } from '../helpers/axios';
 import { useState } from 'react';
 
 
 const TableC = ({ idPage, array, getCartFunction, setIsLoadingHook, getStockFunction, getUsersFunction }) => {
     const storageRole = JSON.parse(sessionStorage.getItem('role'))
     const [show, setShow] = useState(false);
-    const [productInfo, setProductInfo] = useState(null)
-    // const [image, setImage] = useState(null)
+    const [productInfo, setProductInfo] = useState({})
+    const [productImages, setProductImages] = useState([])
+    const [imageToDelete, setImageToDelete] = useState([])
 
     const sizeOptions = [{ value: '', label: '--Selecciona--' }, { value: 'S', label: 'S' }, { value: 'M', label: 'M' },
     { value: 'L', label: 'L' }, { value: 'XL', label: 'XL' }, { value: '2XL', label: '2XL' },
@@ -52,6 +53,7 @@ const TableC = ({ idPage, array, getCartFunction, setIsLoadingHook, getStockFunc
     }
 
     const handleClickEditProduct = (product) => {
+        setProductImages(product.galery)
         setProductInfo(product)
         handleShow()
     }
@@ -62,25 +64,88 @@ const TableC = ({ idPage, array, getCartFunction, setIsLoadingHook, getStockFunc
         setProductInfo({ ...productInfo, [name]: newValue })
     }
 
+    const handleChangeNewImage = async (image) => {
+        try {
+            const formData = new FormData()
+            formData.append('image', image)
+            const result = await clienteAxios.post(`/products/uploadToCloud`, formData, configHeadersImage)
+            if (result.status === 200) {
+                const imageId = Date.now().toString(35) + Math.random().toString(36).slice(2)
+                const url = result.data
+                const newImage = { imageId, url }
+                setProductImages([...productImages, newImage])
+            }
+        } catch (error) {
+            console.log(error);
+
+        }
+    }
+
+    const handleClickDelImgFromProduct = (imageId) => {
+        const newImageToDel = productImages.find(image => image.imageId === imageId)
+        setImageToDelete([...imageToDelete, newImageToDel])
+        const newImgArray = productImages.filter(image => image.imageId !== imageId)
+        setProductImages(newImgArray)
+    }
+
     const handleClickUpdateProduct = async (ev) => {
         ev.preventDefault()
-        productInfo.price === '' ? productInfo.price = 0 : productInfo.price
-        productInfo.quantity === '' ? productInfo.quantity = 0 : productInfo.quantity
-        const updateResult = await clienteAxios.put(`/products/${productInfo._id}`, productInfo, configHeaders)
-        if (updateResult.status === 200) {
-            setTimeout(() => {
-                alert(updateResult.data.msg)
-            }, 500);
-            setIsLoadingHook(true)
-            getStockFunction()
+        try {
+            for (const item of productImages) {
+                const result = productInfo.galery.find(image => image.imageId === item.imageId)
+                if (result === undefined) {
+                    await clienteAxios.post(`/products/addProductImage/${productInfo._id}`, { imageUrl: item.url, imageId: item.imageId }, configHeaders)
+                }
+            }
+            if (imageToDelete.length >= 1) {
+                for (const item of imageToDelete) {
+                    const result = productInfo.galery.find(image => image.imageId === item.imageId)
+                    if (result === undefined) {
+                        await clienteAxios.post('/products/deleteFromCloud', { url: item.url }, configHeaders)
+                    } else {
+                        await clienteAxios.delete(`/products/delProductImage/${productInfo._id}/galery/${result.imageId}`, configHeaders)
+                    }
+                }
+            }
+            delete productInfo.galery
+            productInfo.price === '' ? productInfo.price = 0 : productInfo.price
+            productInfo.quantity === '' ? productInfo.quantity = 0 : productInfo.quantity
+            const updateResult = await clienteAxios.put(`/products/${productInfo._id}`, productInfo, configHeaders)
+            if (updateResult.status === 200) {
+                setTimeout(() => {
+                    alert(updateResult.data.msg)
+                }, 500);
+                setIsLoadingHook(true)
+                getStockFunction()
+            } else {
+                setTimeout(() => {
+                    alert('Tuvimos un problema para actualizar el producto, intenta nuevamente')
+                }, 500);
+            }
+            setProductImages([])
+            setImageToDelete([])
+            setProductInfo({})
             handleClose()
-        } else {
-            setTimeout(() => {
-                alert('Tuvimos un problema para actualizar el producto, intenta nuevamente')
-            }, 500);
-            handleClose()
+        } catch (error) {
+            console.log(error);
         }
+    }
 
+    const handleClickCancelProductUpdate = async () => {
+        try {
+            for (const item of productImages) {
+                const result = productInfo.galery.find(image => image.imageId === item.imageId)
+                if (result === undefined) {
+                    await clienteAxios.post('/products/deleteFromCloud', { url: item.url }, configHeaders)
+                }
+            }
+            setProductImages([])
+            setImageToDelete([])
+            setProductInfo({})
+            handleClose()
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     const handleClickChangeProductState = async (productId, productState) => {
@@ -109,7 +174,7 @@ const TableC = ({ idPage, array, getCartFunction, setIsLoadingHook, getStockFunc
         }
     }
 
-    const handleClickChangeUserStatus = async (userId, userStatus) =>{
+    const handleClickChangeUserStatus = async (userId, userStatus) => {
         let message;
         if (userStatus) {
             message = 'Bloquear usuario?'
@@ -125,7 +190,7 @@ const TableC = ({ idPage, array, getCartFunction, setIsLoadingHook, getStockFunc
         }
     }
 
-    const handleClickChangeUserRole = async (userId, userRole) =>{
+    const handleClickChangeUserRole = async (userId, userRole) => {
         let message;
         if (userRole === 'admin') {
             message = 'Cambiar a usuario?'
@@ -141,9 +206,9 @@ const TableC = ({ idPage, array, getCartFunction, setIsLoadingHook, getStockFunc
         }
     }
 
-    const handleClickDeleteUser = async (userId) =>{
+    const handleClickDeleteUser = async (userId) => {
         const response = confirm('Eliminar usuario?')
-        if(response){
+        if (response) {
             const result = await clienteAxios.delete(`/users/${userId}`, configHeaders)
             alert(result.data.msg)
             setIsLoadingHook(true)
@@ -200,7 +265,7 @@ const TableC = ({ idPage, array, getCartFunction, setIsLoadingHook, getStockFunc
                                                 <>
                                                     <Button className='mx-1' variant='info' onClick={() => handleClickEditProduct(product)}>Editar</Button>
 
-                                                    <Modal show={show} onHide={handleClose}>
+                                                    <Modal show={show} onHide={handleClickCancelProductUpdate}>
                                                         <Modal.Header closeButton>
                                                             <Modal.Title>Producto</Modal.Title>
                                                         </Modal.Header>
@@ -208,27 +273,27 @@ const TableC = ({ idPage, array, getCartFunction, setIsLoadingHook, getStockFunc
                                                             <Form>
                                                                 <Form.Group className="mb-3" controlId="formBasicName">
                                                                     <Form.Label>Nombre</Form.Label>
-                                                                    <Form.Control type="text" name='name' value={productInfo?.name} onChange={(ev) => handleChageProductInfo(ev)} />
+                                                                    <Form.Control type="text" name='name' value={productInfo?.name || ''} onChange={(ev) => handleChageProductInfo(ev)} />
                                                                 </Form.Group>
 
                                                                 <Form.Group className="mb-3" controlId="formBasicPrice">
                                                                     <Form.Label>Precio</Form.Label>
-                                                                    <Form.Control type="number" name='price' value={productInfo?.price} onChange={(ev) => handleChageProductInfo(ev)} />
+                                                                    <Form.Control type="number" name='price' value={productInfo?.price || ''} onChange={(ev) => handleChageProductInfo(ev)} />
                                                                 </Form.Group>
 
                                                                 <Form.Group className="mb-3" controlId="formBasicDescription">
                                                                     <Form.Label>Descripción</Form.Label>
-                                                                    <Form.Control type="text" name='description' value={productInfo?.description} onChange={(ev) => handleChageProductInfo(ev)} />
+                                                                    <Form.Control type="text" name='description' value={productInfo?.description || ''} onChange={(ev) => handleChageProductInfo(ev)} />
                                                                 </Form.Group>
 
                                                                 <Form.Group className="mb-3" controlId="formBasicColor">
                                                                     <Form.Label>Color</Form.Label>
-                                                                    <Form.Control type="text" name='color' value={productInfo?.color} onChange={(ev) => handleChageProductInfo(ev)} />
+                                                                    <Form.Control type="text" name='color' value={productInfo?.color || ''} onChange={(ev) => handleChageProductInfo(ev)} />
                                                                 </Form.Group>
 
                                                                 <Form.Group className="mb-3" controlId="formBasicSize">
                                                                     <Form.Label>Talle</Form.Label>
-                                                                    <Form.Select type="text" name='size' value={productInfo?.size} onChange={(ev) => handleChageProductInfo(ev)}>
+                                                                    <Form.Select type="text" name='size' value={productInfo?.size || ''} onChange={(ev) => handleChageProductInfo(ev)}>
                                                                         {sizeOptions.map(size =>
                                                                             <option key={size.value} value={size.value}>{size.label}</option>
                                                                         )}
@@ -237,13 +302,26 @@ const TableC = ({ idPage, array, getCartFunction, setIsLoadingHook, getStockFunc
 
                                                                 <Form.Group className="mb-3" controlId="formBasicStock">
                                                                     <Form.Label>Stock</Form.Label>
-                                                                    <Form.Control type="number" name='quantity' value={productInfo?.quantity} onChange={(ev) => handleChageProductInfo(ev)} />
+                                                                    <Form.Control type="number" name='quantity' value={productInfo?.quantity || ''} onChange={(ev) => handleChageProductInfo(ev)} />
                                                                 </Form.Group>
 
-                                                                {/* <Form.Group className="mb-3" controlId="formBasicPassword">
+                                                                <Form.Group className="mb-3" controlId="formBasicPassword">
                                                                     <Form.Label>Imagen</Form.Label>
-                                                                    <Form.Control type="file" onChange={(ev) => setImage(ev.target.files[0])} />
-                                                                </Form.Group> */}
+                                                                    <Form.Control type="file" onChange={(ev) => handleChangeNewImage(ev.target.files[0])} />
+                                                                </Form.Group>
+
+                                                                <Container>
+                                                                    <Row>
+                                                                        {
+                                                                            productImages.map(image =>
+                                                                                <Col key={image.imageId}>
+                                                                                    <Button onClick={() => handleClickDelImgFromProduct(image.imageId)}>X</Button>
+                                                                                    <img src={image.url} alt="" />
+                                                                                </Col>
+                                                                            )
+                                                                        }
+                                                                    </Row>
+                                                                </Container>
 
                                                                 <Button variant="primary" type="submit" onClick={(ev) => handleClickUpdateProduct(ev)}>
                                                                     Guardar Cambios
@@ -293,9 +371,9 @@ const TableC = ({ idPage, array, getCartFunction, setIsLoadingHook, getStockFunc
                                             <Button
                                                 title={user.role === 'admin' ? 'Cambiar a usuario' : 'Cambiar a administrador'}
                                                 variant={user.role === 'admin' ? 'primary' : 'info'}
-                                                disabled={storageRole === 'mainAdmin' ? false : true }
-                                                onClick={()=> handleClickChangeUserRole(user._id, user.role)}
-                                                >
+                                                disabled={storageRole === 'mainAdmin' ? false : true}
+                                                onClick={() => handleClickChangeUserRole(user._id, user.role)}
+                                            >
                                                 {user.role === 'admin' ? 'Admin' : 'Usuario'}
                                             </Button>
                                         </td>
@@ -304,7 +382,7 @@ const TableC = ({ idPage, array, getCartFunction, setIsLoadingHook, getStockFunc
                                                 title='Eliminar usuario'
                                                 variant='danger'
                                                 disabled={storageRole === 'mainAdmin' ? false : user.role === 'admin' ? true : false}
-                                                onClick={()=> handleClickDeleteUser(user._id)}>
+                                                onClick={() => handleClickDeleteUser(user._id)}>
                                                 Eliminar
                                             </Button>
                                         </td>
