@@ -7,7 +7,7 @@ import clienteAxios, { configHeaders, configHeadersImage } from '../helpers/axio
 import { useState } from 'react';
 
 
-const TableC = ({ idPage, array, getCartFunction, setIsLoadingHook, getStockFunction, getUsersFunction }) => {
+const TableC = ({ idPage, array, setIsLoadingHook }) => {
     const storageRole = JSON.parse(sessionStorage.getItem('role'))
     const [show, setShow] = useState(false);
     const [productInfo, setProductInfo] = useState({})
@@ -37,19 +37,16 @@ const TableC = ({ idPage, array, getCartFunction, setIsLoadingHook, getStockFunc
             if (result) {
                 await clienteAxios.post(`/products/delFromCart/${productId}`, {}, configHeaders)
                 setIsLoadingHook(true)
-                getCartFunction()
             }
         } else {
             await clienteAxios.post(`/products/delFromCart/${productId}`, {}, configHeaders)
             setIsLoadingHook(true)
-            getCartFunction()
         }
     }
 
     const handleIncreaseFromCart = async (productId) => {
         await clienteAxios.post(`/products/addToCart/${productId}`, {}, configHeaders)
         setIsLoadingHook(true)
-        getCartFunction()
     }
 
     const handleClickEditProduct = (product) => {
@@ -116,7 +113,7 @@ const TableC = ({ idPage, array, getCartFunction, setIsLoadingHook, getStockFunc
                     alert(updateResult.data.msg)
                 }, 500);
                 setIsLoadingHook(true)
-                getStockFunction()
+
             } else {
                 setTimeout(() => {
                     alert('Tuvimos un problema para actualizar el producto, intenta nuevamente')
@@ -160,7 +157,6 @@ const TableC = ({ idPage, array, getCartFunction, setIsLoadingHook, getStockFunc
             const result = await clienteAxios.post(`/products/productState/${productId}`, {}, configHeaders)
             alert(result.data.msg)
             setIsLoadingHook(true)
-            getStockFunction()
         }
     }
 
@@ -170,7 +166,6 @@ const TableC = ({ idPage, array, getCartFunction, setIsLoadingHook, getStockFunc
             const result = await clienteAxios.delete(`products/${productId}`, configHeaders)
             alert(result.data.msg)
             setIsLoadingHook(true)
-            getStockFunction()
         }
     }
 
@@ -186,7 +181,6 @@ const TableC = ({ idPage, array, getCartFunction, setIsLoadingHook, getStockFunc
             const result = await clienteAxios.post(`/users/userState/${userId}`, {}, configHeaders)
             alert(result.data.msg)
             setIsLoadingHook(true)
-            getUsersFunction()
         }
     }
 
@@ -202,7 +196,6 @@ const TableC = ({ idPage, array, getCartFunction, setIsLoadingHook, getStockFunc
             const result = await clienteAxios.post(`/users/changeUserRole/${userId}`, {}, configHeaders)
             alert(result.data.msg)
             setIsLoadingHook(true)
-            getUsersFunction()
         }
     }
 
@@ -212,7 +205,6 @@ const TableC = ({ idPage, array, getCartFunction, setIsLoadingHook, getStockFunc
             const result = await clienteAxios.delete(`/users/${userId}`, configHeaders)
             alert(result.data.msg)
             setIsLoadingHook(true)
-            getUsersFunction()
         }
     }
 
@@ -399,10 +391,7 @@ const TableC = ({ idPage, array, getCartFunction, setIsLoadingHook, getStockFunc
 TableC.propTypes = {
     idPage: PropTypes.string,
     array: PropTypes.array,
-    getCartFunction: PropTypes.func,
-    setIsLoadingHook: PropTypes.func,
-    getStockFunction: PropTypes.func,
-    getUsersFunction: PropTypes.func
+    setIsLoadingHook: PropTypes.func
 }
 
 export default TableC

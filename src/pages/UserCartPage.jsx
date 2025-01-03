@@ -31,13 +31,13 @@ const UserCartPage = () => {
         if(isLoading){
             getCart()
         }
-    }, [cartProducts, isLoading])
+    }, [isLoading])
     
 
 
     return (
         <>
-        <TableC idPage={'userCart'} array={cartProducts} getCartFunction={getCart} setIsLoadingHook={setIsLoading}/>
+        <TableC idPage={'userCart'} array={cartProducts} setIsLoadingHook={setIsLoading}/>
         </>
     )
 }

@@ -31,7 +31,7 @@ const AdminUserPage = () => {
         if (isLoading) {
             getUsers()
         }
-    }, [users,isLoading])
+    }, [isLoading])
     
 
     return (
@@ -41,7 +41,7 @@ const AdminUserPage = () => {
                     <Form.Control onChange={handleChangeSearch} style={{width: '14em', margin: '2em 8em'}} value={searchWord} placeholder="Buscar"/>
                 </Form.Group>
             </Form>
-        <TableC array={filteredUsers} setIsLoadingHook={setIsLoading} getUsersFunction={getUsers}/>
+        <TableC array={filteredUsers} setIsLoadingHook={setIsLoading}/>
         </>
     )
 }

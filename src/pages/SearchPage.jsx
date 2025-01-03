@@ -1,20 +1,21 @@
 import { useParams } from "react-router-dom"
 import clienteAxios from "../helpers/axios"
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { Col, Container, Row } from "react-bootstrap"
 import CardC from "../components/CardC"
 
 const SearchPage = () => {
     const params = useParams()
     const [products, setProducts] = useState([])
-    const getSearchedProducts = async () =>{
+
+    const getSearchedProducts = useCallback(async () =>{
         const result = await clienteAxios.get(`/products/search/${params.toSearch}`)
         setProducts(result.data)
-    }
+    }, [params.toSearch])
 
     useEffect(() => {
         getSearchedProducts()
-    },)
+    },[getSearchedProducts])
     
     return (
         <>

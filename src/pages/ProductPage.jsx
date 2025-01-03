@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import clienteAxios, { configHeaders } from "../helpers/axios"
 import Carrousel from "../components/Carrousel"
@@ -14,37 +14,41 @@ const ProductPage = () => {
     const token = JSON.parse(sessionStorage.getItem('token'))
 
 
-    const getProduct = async () => {
+    const getProduct = useCallback(async () => {
         try {
             const result = await clienteAxios.get(`/products/${params.productId}`)
             setProduct(result.data);
-            await getFavorites(result.data._id)
+            if(storageRole === 'user'){
+                await getFavorites(result.data._id)
+                return
+            }
+            setIsLoading(false)
         } catch (error) {
             console.log(error);
         } 
-    }
+    }, [params.productId, storageRole])
 
     const getFavorites = async (productId) =>{    
-        if(token){
             try {
                 const result = await clienteAxios.get(`/products/getFavorites`, configHeaders)
                 const favorites = result.data.products            
                 if(favorites.includes(productId)){
                     setIsFavorite(true)
+                    return
                 } else {
-                    setIsFavorite(false)            
+                    setIsFavorite(false)
+                    return            
                 }
             } catch (error) {
                 console.log(error);
             } finally {
                 setIsLoading(false)
-            }
-        }    
+            }   
     }
 
     const handleClickAddToCart = async () =>{
         if(token === null){
-            alert('Debe iniciar sesion')
+            alert('Debe iniciar sesion, redirigiendo a login')
             setTimeout(() => {
                 navigate('/login')
             }, 1000);
@@ -52,6 +56,7 @@ const ProductPage = () => {
         try {
             const result = await clienteAxios.post(`/products/addToCart/${product._id}`, {}, configHeaders)
             alert(result.data.msg);
+            setIsLoading(true)
         } catch (error) {
             alert(error.response.data.msg);
         } 
@@ -59,7 +64,7 @@ const ProductPage = () => {
 
     const handleClickAddToFav = async () =>{
         if(token === null){
-            alert('Debe iniciar sesion')
+            alert('Debe iniciar sesion, redirigiendo a login')
             setTimeout(() => {
                 navigate('/login')
             }, 1000);
@@ -68,7 +73,6 @@ const ProductPage = () => {
             const result = await clienteAxios.post(`/products/addToFavorite/${params.productId}`, {}, configHeaders)
             alert(result.data.msg);
             setIsLoading(true)
-            getFavorites()
         } catch (error) {
             alert(error.response.data.msg)
         }
@@ -76,7 +80,7 @@ const ProductPage = () => {
     
     const handleClickDelFromFav = async () =>{
         if(token === null){
-            alert('Debe iniciar sesion')
+            alert('Debe iniciar sesion, redirigiendo a login')
             setTimeout(() => {
                 navigate('/login')
             }, 1000);
@@ -85,7 +89,6 @@ const ProductPage = () => {
                 const result = await clienteAxios.post(`/products/delFromFavorite/${params.productId}`, {}, configHeaders)
                 alert(result.data.msg);
                 setIsLoading(true)
-                getFavorites()
             } catch (error) {
                 alert(error.response.data.msg)
             }
@@ -95,7 +98,7 @@ const ProductPage = () => {
         if (isLoading) {
             getProduct()
         }
-    },[isLoading])
+    },[isLoading, getProduct])
 
     return (
         <>
@@ -109,7 +112,7 @@ const ProductPage = () => {
                         <div className="options" >
                             <Button 
                             className="mx-3 mt-3" 
-                            disabled={product.quantity === 0 ? true : storageRole === 'user' ? false : storageRole === null ? false : true} 
+                            disabled={product.quantity === 0 ? true : storageRole === 'user' || null ? false : true} 
                             onClick={() => handleClickAddToCart()}>
                                 {product.quantity === 0 ? 'Sin Stock' : 'Comprar'}
                                 </Button>

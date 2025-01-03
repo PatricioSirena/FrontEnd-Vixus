@@ -31,7 +31,7 @@ const AdminProductPage = () => {
         if (isLoading) {
             getStockProducts()            
         }
-    }, [products, isLoading])
+    }, [isLoading])
     
 
     return (
@@ -41,7 +41,7 @@ const AdminProductPage = () => {
                     <Form.Control onChange={handleChangeSearch} style={{width: '14em', margin: '2em 8em'}} value={searchWord} placeholder="Buscar"/>
                 </Form.Group>
             </Form>
-            <TableC array={filteredProducts} idPage={'productAdmin'} setIsLoadingHook={setIsLoading} getStockFunction={getStockProducts}/>
+            <TableC array={filteredProducts} idPage={'productAdmin'} setIsLoadingHook={setIsLoading}/>
         </>
     )
 }

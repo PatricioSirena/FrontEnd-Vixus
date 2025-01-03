@@ -15,17 +15,17 @@ const Carrousel = ({idPage, productImages}) => {
         {
             idPage === 'homePage' ? 
             <Carousel fade>
-            {images.map((image, index) => (
-                <Carousel.Item key={index}>
+            {images.map(image => (
+                <Carousel.Item key={image.id}>
                     <ExampleCarouselImage src={image.src} />
                 </Carousel.Item>
             ))}
         </Carousel>
         :
         <Carousel fade>
-        {productImages?.map((image, index) => (
-            <Carousel.Item key={index}>
-                <ExampleCarouselImage src={image} />
+        {productImages?.map(image => (
+            <Carousel.Item key={image.imageId}>
+                <ExampleCarouselImage src={image.url} />
             </Carousel.Item>
         ))}
     </Carousel>

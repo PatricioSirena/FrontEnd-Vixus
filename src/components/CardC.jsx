@@ -4,14 +4,13 @@ import PropTypes from 'prop-types'
 import clienteAxios, { configHeaders } from '../helpers/axios';
 
 
-const CardC = ({ cardId, imgLink, infoCardtext, productId, productName, productPrice, mainImage, setIsLoadingHook, getFavoritesFunction, productStock }) => {
+const CardC = ({ cardId, imgLink, infoCardtext, productId, productName, productPrice, mainImage, setIsLoadingHook, productStock }) => {
     
     const handleClickDelFromFav = async () =>{
             try {
                 const result = await clienteAxios.post(`/products/delFromFavorite/${productId}`, {}, configHeaders)
                 alert(result.data.msg);
                 setIsLoadingHook(true)
-                getFavoritesFunction()
             } catch (error) {
                 alert(error.response.data.msg)
             }
@@ -46,7 +45,7 @@ const CardC = ({ cardId, imgLink, infoCardtext, productId, productName, productP
                             <Card.Img
                                 title={productName}
                                 variant="top"
-                                src={mainImage}
+                                src={mainImage ? mainImage : ''}
                                 className="card-img"
                                 style={{border: 'none', height:'200px'}}
                                 />
