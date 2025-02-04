@@ -44,8 +44,8 @@ const NavbarC = () => {
                             <NavLink to="*" className={'nav-link'}>Sobre Nosotros</NavLink>
                             <NavLink to="*" className={'nav-link'}>Contacto</NavLink>
                         </Nav>
-                        <Form>
-                            <Form.Group style={{display: 'flex', margin: '0 1em'}} controlId='formBasicSearch'>
+                        <Form className="ms-auto">
+                            <Form.Group style={{display: 'flex', justifyContent: 'end', margin: '0 1em'}} controlId='formBasicSearch'>
                                 <Form.Control type='text' placeholder='Buscar' value={toSearch} name='keyWord' onChange={handleChangeSearchKeyWord}/>
                                 <Button onClick={handleClickSearch}>Buscar</Button>
                             </Form.Group>
@@ -53,7 +53,7 @@ const NavbarC = () => {
                         {
                             !token ?
                                 <>
-                                    <Nav className="ms-auto">
+                                    <Nav>
                                         <NavLink to="/login" className={'nav-link'}>Iniciar Sesion</NavLink>
                                         <NavLink to="/register" className={'nav-link'}>Registro</NavLink>
                                     </Nav>

@@ -10,9 +10,13 @@ const AdminProductPage = () => {
 
 
     const getStockProducts = async () =>{
-        const resultProducts = await clienteAxios.get('/products', configHeaders)        
-        setProducts(resultProducts.data)
-        setIsLoading(false)
+        try {
+            const resultProducts = await clienteAxios.get('/products', configHeaders)        
+            setProducts(resultProducts.data)
+            setIsLoading(false)
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     const handleChangeSearch = (ev) =>{

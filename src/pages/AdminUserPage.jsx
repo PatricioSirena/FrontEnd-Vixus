@@ -11,9 +11,13 @@ const AdminUserPage = () => {
 
 
     const getUsers = async () =>{
-        const result = await clienteAxios.get('/users', configHeaders)
-        setUsers(result.data)
-        setIsLoading(false)
+        try {
+            const result = await clienteAxios.get('/users', configHeaders)
+            setUsers(result.data)
+            setIsLoading(false)
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     const handleChangeSearch = (ev) =>{

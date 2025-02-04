@@ -1,18 +1,34 @@
 import Table from 'react-bootstrap/Table';
-import Modal from 'react-bootstrap/Modal';
-import Form from 'react-bootstrap/Form';
-import { Button, Col, Container, Row } from 'react-bootstrap';
+import { Button, Container } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import clienteAxios, { configHeaders, configHeadersImage } from '../helpers/axios';
 import { useState } from 'react';
+import ProductModalC from './ProductModalC';
 
 
 const TableC = ({ idPage, array, setIsLoadingHook }) => {
     const storageRole = JSON.parse(sessionStorage.getItem('role'))
-    const [show, setShow] = useState(false);
-    const [productInfo, setProductInfo] = useState({})
+    const [showEdit, setShowEdit] = useState(false);
+    const [showNew, setShowNew] = useState(false);
+    const [productInfo, setProductInfo] = useState({
+        name: '',
+        price: '',
+        description: '',
+        color: '',
+        size: '',
+        quantity: ''
+    })
     const [productImages, setProductImages] = useState([])
     const [imageToDelete, setImageToDelete] = useState([])
+    const [errorMessage, setErrorMessage] = useState({
+        name: '',
+        price: '',
+        description: '',
+        color: '',
+        quantity: '',
+        save: ''
+    })
+    const [saveProduct, setSaveProduct] = useState(true)
 
     const sizeOptions = [{ value: '', label: '--Selecciona--' }, { value: 'S', label: 'S' }, { value: 'M', label: 'M' },
     { value: 'L', label: 'L' }, { value: 'XL', label: 'XL' }, { value: '2XL', label: '2XL' },
@@ -28,8 +44,10 @@ const TableC = ({ idPage, array, setIsLoadingHook }) => {
     { value: '115', label: '115' }, { value: '120', label: '120' }
     ]
 
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+    const handleCloseEdit = () => setShowEdit(false);
+    const handleShowEdit = () => setShowEdit(true);
+    const handleCloseNew = () => setShowNew(false);
+    const handleShowNew = () => setShowNew(true);
 
     const handleDelFromCart = async (productId, productQuantity) => {
         if (productQuantity === 1) {
@@ -52,13 +70,53 @@ const TableC = ({ idPage, array, setIsLoadingHook }) => {
     const handleClickEditProduct = (product) => {
         setProductImages(product.galery)
         setProductInfo(product)
-        handleShow()
+        handleShowEdit()
     }
 
     const handleChageProductInfo = (ev) => {
         const { name, value } = ev.target
+        let newErrorMessage = { ...errorMessage };
+
+        if (name === 'name') {
+            if (!/^[A-Za-z0-9\s]{4,40}$/.test(value)) {
+                newErrorMessage.name = 'El nombre debe tener entre 4 y 40 caracteres, letras o numeros';
+            } else {
+                newErrorMessage.name = '';
+            }
+        }
+        if (name === 'price') {
+            if (value === '' || Number(value) <= 0 || !/^\d+$/.test(value)) {
+                newErrorMessage.price = 'Debe ingresar un valor numerico mayor a 0';
+            } else {
+                newErrorMessage.price = '';
+            }
+        }
+        if (name === 'description') {
+            if (!/^[A-Za-z0-9\s]{10,200}$/.test(value)) {
+                newErrorMessage.description = 'El descripción debe tener entre 10 y 200 caracteres, letras o numeros';
+            } else {
+                newErrorMessage.description = '';
+            }
+        }
+        if (name === 'color') {
+            if (value && !/^[A-Za-z]+$/.test(value)) {
+                newErrorMessage.color = 'Solo se permiten letras para el color';
+            } else {
+                newErrorMessage.color = '';
+            }
+        }
+        if (name === 'quantity') {
+            if (value && isNaN(value)) {
+                newErrorMessage.quantity = 'Debe ingresar un valor numerico';
+            } else {
+                newErrorMessage.quantity = '';
+            }
+        }
+        setErrorMessage(newErrorMessage);
         const newValue = (name === 'price' || name === 'quantity') ? (value === '' ? '' : Number(value)) : value
-        setProductInfo({ ...productInfo, [name]: newValue })
+        setProductInfo(prevState => ({ ...prevState, [name]: newValue }))
+        const hasErrors = Object.values(newErrorMessage).some(error => error !== '');
+        setSaveProduct(!hasErrors);
     }
 
     const handleChangeNewImage = async (image) => {
@@ -105,9 +163,12 @@ const TableC = ({ idPage, array, setIsLoadingHook }) => {
                 }
             }
             delete productInfo.galery
-            productInfo.price === '' ? productInfo.price = 0 : productInfo.price
-            productInfo.quantity === '' ? productInfo.quantity = 0 : productInfo.quantity
-            const updateResult = await clienteAxios.put(`/products/${productInfo._id}`, productInfo, configHeaders)
+            const updatedProuctInfo = {
+                ...productInfo,
+                price: productInfo.price === '' ? 0 : productInfo.price,
+                quantity: productInfo.quantity === '' ? 0 : productInfo.quantity
+            }
+            const updateResult = await clienteAxios.put(`/products/${productInfo._id}`, updatedProuctInfo, configHeaders)
             if (updateResult.status === 200) {
                 setTimeout(() => {
                     alert(updateResult.data.msg)
@@ -119,16 +180,24 @@ const TableC = ({ idPage, array, setIsLoadingHook }) => {
                     alert('Tuvimos un problema para actualizar el producto, intenta nuevamente')
                 }, 500);
             }
+            setErrorMessage({ name: '', price: '', description: '' })
             setProductImages([])
             setImageToDelete([])
-            setProductInfo({})
-            handleClose()
+            setProductInfo({
+                name: '',
+                price: '',
+                description: '',
+                color: '',
+                size: '',
+                quantity: ''
+            })
+            handleCloseEdit()
         } catch (error) {
             console.log(error);
         }
     }
 
-    const handleClickCancelProductUpdate = async () => {
+    const handleClickCancelProductUpdate = async (idModal) => {
         try {
             for (const item of productImages) {
                 const result = productInfo.galery.find(image => image.imageId === item.imageId)
@@ -136,10 +205,22 @@ const TableC = ({ idPage, array, setIsLoadingHook }) => {
                     await clienteAxios.post('/products/deleteFromCloud', { url: item.url }, configHeaders)
                 }
             }
+            setErrorMessage({ name: '', price: '', description: '' })
             setProductImages([])
             setImageToDelete([])
-            setProductInfo({})
-            handleClose()
+            setProductInfo({
+                name: '',
+                price: '',
+                description: '',
+                color: '',
+                size: '',
+                quantity: ''
+            })
+            if (idModal === 'editProduct') {
+                handleCloseEdit()
+            } else {
+                handleCloseNew()
+            }
         } catch (error) {
             console.log(error);
         }
@@ -167,6 +248,48 @@ const TableC = ({ idPage, array, setIsLoadingHook }) => {
             alert(result.data.msg)
             setIsLoadingHook(true)
         }
+    }
+
+    const handleClickSaveProduct = async (ev) => {
+        ev.preventDefault()
+        try {
+            const product = {
+                ...productInfo,
+                price: productInfo.price === '' ? 0 : productInfo.price,
+                quantity: productInfo.quantity === '' ? 0 : productInfo.quantity
+            }
+            const newProduct = await clienteAxios.post('/products', product, configHeaders)
+            if (newProduct.status === 201) {
+                for (const item of productImages) {
+                    const result = await clienteAxios.post(`/products/addProductImage/${newProduct.data.productId}`, { imageUrl: item.url, imageId: item.imageId }, configHeaders)
+                    if (result.status !== 200) {
+                        alert('Tuvimos un problema para agregar las imagenes del producto')
+                        return
+                    } else {
+                        alert(newProduct.data.msg)
+                        setIsLoadingHook(true)
+                        setErrorMessage({ name: '', price: '', description: '' })
+                        setProductImages([])
+                        setProductInfo({
+                            name: '',
+                            price: '',
+                            description: '',
+                            color: '',
+                            size: '',
+                            quantity: ''
+                        })
+                        handleCloseNew()
+                    }
+                }
+            } else {
+                setTimeout(() => {
+                    alert('Tuvimos un problema para agregar el producto, intenta nuevamente')
+                }, 500);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+
     }
 
     const handleClickChangeUserStatus = async (userId, userStatus) => {
@@ -210,6 +333,19 @@ const TableC = ({ idPage, array, setIsLoadingHook }) => {
 
     return (
         <>
+            <Button onClick={handleShowNew}>Agregar Producto</Button>
+            <ProductModalC
+                idModal={'newProduct'}
+                showNew={showNew}
+                handleClickCancelProductUpdate={handleClickCancelProductUpdate}
+                handleChageProductInfo={handleChageProductInfo}
+                errorMessage={errorMessage}
+                sizeOptions={sizeOptions}
+                handleChangeNewImage={handleChangeNewImage}
+                productImages={productImages}
+                handleClickDelImgFromProduct={handleClickDelImgFromProduct}
+                handleClickSaveProduct={handleClickSaveProduct}
+                saveProduct={saveProduct} />
             <Container>
                 <Table responsive>
                     <thead>
@@ -256,8 +392,20 @@ const TableC = ({ idPage, array, setIsLoadingHook }) => {
                                             idPage === 'productAdmin' ?
                                                 <>
                                                     <Button className='mx-1' variant='info' onClick={() => handleClickEditProduct(product)}>Editar</Button>
-
-                                                    <Modal show={show} onHide={handleClickCancelProductUpdate}>
+                                                    <ProductModalC
+                                                        idModal={'editProduct'}
+                                                        show={showEdit}
+                                                        handleClickCancelProductUpdate={handleClickCancelProductUpdate}
+                                                        productInfo={productInfo}
+                                                        handleChageProductInfo={handleChageProductInfo}
+                                                        errorMessage={errorMessage}
+                                                        sizeOptions={sizeOptions}
+                                                        handleChangeNewImage={handleChangeNewImage}
+                                                        productImages={productImages}
+                                                        handleClickDelImgFromProduct={handleClickDelImgFromProduct}
+                                                        handleClickUpdateProduct={handleClickUpdateProduct}
+                                                        saveProduct={saveProduct} />
+                                                    {/* <Modal show={show} onHide={handleClickCancelProductUpdate}>
                                                         <Modal.Header closeButton>
                                                             <Modal.Title>Producto</Modal.Title>
                                                         </Modal.Header>
@@ -265,17 +413,41 @@ const TableC = ({ idPage, array, setIsLoadingHook }) => {
                                                             <Form>
                                                                 <Form.Group className="mb-3" controlId="formBasicName">
                                                                     <Form.Label>Nombre</Form.Label>
-                                                                    <Form.Control type="text" name='name' value={productInfo?.name || ''} onChange={(ev) => handleChageProductInfo(ev)} />
+                                                                    <Form.Control 
+                                                                    type="text" 
+                                                                    name='name' 
+                                                                    value={productInfo?.name || ''} 
+                                                                    onChange={(ev) => handleChageProductInfo(ev)} 
+                                                                    isInvalid={!!errorMessage.name}/>
+                                                                    <Form.Control.Feedback type="invalid">
+                                                                        {errorMessage.name}
+                                                                    </Form.Control.Feedback>
                                                                 </Form.Group>
 
                                                                 <Form.Group className="mb-3" controlId="formBasicPrice">
                                                                     <Form.Label>Precio</Form.Label>
-                                                                    <Form.Control type="number" name='price' value={productInfo?.price || ''} onChange={(ev) => handleChageProductInfo(ev)} />
+                                                                    <Form.Control 
+                                                                    type="text" 
+                                                                    name='price' 
+                                                                    value={productInfo?.price || ''} 
+                                                                    onChange={(ev) => handleChageProductInfo(ev)} 
+                                                                    isInvalid={!!errorMessage.price}/>
+                                                                    <Form.Control.Feedback type="invalid">
+                                                                        {errorMessage.price}
+                                                                    </Form.Control.Feedback>
                                                                 </Form.Group>
 
                                                                 <Form.Group className="mb-3" controlId="formBasicDescription">
                                                                     <Form.Label>Descripción</Form.Label>
-                                                                    <Form.Control type="text" name='description' value={productInfo?.description || ''} onChange={(ev) => handleChageProductInfo(ev)} />
+                                                                    <Form.Control 
+                                                                    type="text" 
+                                                                    name='description' 
+                                                                    value={productInfo?.description || ''} 
+                                                                    onChange={(ev) => handleChageProductInfo(ev)} 
+                                                                    isInvalid={!!errorMessage.description}/>
+                                                                    <Form.Control.Feedback type="invalid">
+                                                                        {errorMessage.description}
+                                                                    </Form.Control.Feedback>
                                                                 </Form.Group>
 
                                                                 <Form.Group className="mb-3" controlId="formBasicColor">
@@ -294,9 +466,8 @@ const TableC = ({ idPage, array, setIsLoadingHook }) => {
 
                                                                 <Form.Group className="mb-3" controlId="formBasicStock">
                                                                     <Form.Label>Stock</Form.Label>
-                                                                    <Form.Control type="number" name='quantity' value={productInfo?.quantity || ''} onChange={(ev) => handleChageProductInfo(ev)} />
+                                                                    <Form.Control type="text" name='quantity' value={productInfo?.quantity || ''} onChange={(ev) => handleChageProductInfo(ev)} />
                                                                 </Form.Group>
-
                                                                 <Form.Group className="mb-3" controlId="formBasicPassword">
                                                                     <Form.Label>Imagen</Form.Label>
                                                                     <Form.Control type="file" onChange={(ev) => handleChangeNewImage(ev.target.files[0])} />
@@ -320,7 +491,7 @@ const TableC = ({ idPage, array, setIsLoadingHook }) => {
                                                                 </Button>
                                                             </Form>
                                                         </Modal.Body>
-                                                    </Modal>
+                                                    </Modal> */}
 
                                                     <Button
                                                         className='mx-1'

@@ -11,7 +11,8 @@ const FormC = ({ idPage }) => {
     const [formData, setFormData] = useState({})
 
     const handleChangeForm = (ev) => {
-        setFormData({ ...formData, [ev.target.name]: ev.target.value })
+        const { name, value } = ev.target
+        setFormData({ ...formData, [name]: value })
     }
 
     const handleClickRegister = async (ev) => {
