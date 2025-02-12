@@ -42,7 +42,7 @@ const AdminUserPage = () => {
         <>
         <Form>
                 <Form.Group controlId="formBasicSearch">
-                    <Form.Control onChange={handleChangeSearch} style={{width: '14em', margin: '2em 8em'}} value={searchWord} placeholder="Buscar"/>
+                    <Form.Control onChange={handleChangeSearch} style={{width: '12em', margin: '1em 8em 0px'}} value={searchWord} placeholder="Buscar usuario"/>
                 </Form.Group>
             </Form>
         <TableC array={filteredUsers} setIsLoadingHook={setIsLoading}/>

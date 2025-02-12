@@ -333,7 +333,15 @@ const TableC = ({ idPage, array, setIsLoadingHook }) => {
 
     return (
         <>
-            <Button onClick={handleShowNew}>Agregar Producto</Button>
+            {
+                idPage === 'productAdmin' &&
+                <div style={{display: 'flex', justifyContent: 'right', margin: '0 10em'}}>
+                <Button
+                    onClick={handleShowNew}>
+                    Agregar Producto
+                </Button>
+                </div>
+            }
             <ProductModalC
                 idModal={'newProduct'}
                 showNew={showNew}
@@ -346,31 +354,31 @@ const TableC = ({ idPage, array, setIsLoadingHook }) => {
                 handleClickDelImgFromProduct={handleClickDelImgFromProduct}
                 handleClickSaveProduct={handleClickSaveProduct}
                 saveProduct={saveProduct} />
-            <Container>
+            <Container className='mt-3'>
                 <Table responsive>
                     <thead>
                         <tr>
                             {
                                 idPage === 'productAdmin' || idPage === 'userCart' ?
                                     <>
-                                        <th>Nombre</th>
-                                        <th>Precio</th>
-                                        <th>Descripción</th>
-                                        <th>Color</th>
-                                        <th>Talle</th>
+                                        <th style={{textAlign: 'center'}}>Nombre</th>
+                                        <th style={{textAlign: 'center'}}>Precio</th>
+                                        <th style={{textAlign: 'center'}}>Descripción</th>
+                                        <th style={{textAlign: 'center'}}>Color</th>
+                                        <th style={{textAlign: 'center'}}>Talle</th>
                                         {idPage === 'productAdmin' &&
-                                            <th>Stock</th>
+                                            <th style={{textAlign: 'center'}}>Stock</th>
                                         }
-                                        <th>Acciónes</th>
+                                        <th style={{textAlign: 'center'}}>Acciónes</th>
                                     </>
                                     :
                                     <>
-                                        <th>Nombre</th>
-                                        <th>Correo</th>
-                                        <th>Telefono</th>
-                                        <th>Estado</th>
-                                        <th>Tipo de Usuario</th>
-                                        <th>Eliminar Usuario</th>
+                                        <th style={{textAlign: 'center'}}>Nombre</th>
+                                        <th style={{textAlign: 'center'}}>Correo</th>
+                                        <th style={{textAlign: 'center'}}>Telefono</th>
+                                        <th style={{textAlign: 'center'}}>Estado</th>
+                                        <th style={{textAlign: 'center'}}>Tipo de Usuario</th>
+                                        <th style={{textAlign: 'center'}}>Eliminar Usuario</th>
                                     </>
                             }
                         </tr>
@@ -390,7 +398,7 @@ const TableC = ({ idPage, array, setIsLoadingHook }) => {
                                         }
                                         <td>{
                                             idPage === 'productAdmin' ?
-                                                <>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                                                     <Button className='mx-1' variant='info' onClick={() => handleClickEditProduct(product)}>Editar</Button>
                                                     <ProductModalC
                                                         idModal={'editProduct'}
@@ -405,7 +413,7 @@ const TableC = ({ idPage, array, setIsLoadingHook }) => {
                                                         handleClickDelImgFromProduct={handleClickDelImgFromProduct}
                                                         handleClickUpdateProduct={handleClickUpdateProduct}
                                                         saveProduct={saveProduct} />
-                                                        
+
                                                     <Button
                                                         className='mx-1'
                                                         variant={product.active ? 'warning' : 'primary'}
@@ -418,7 +426,7 @@ const TableC = ({ idPage, array, setIsLoadingHook }) => {
                                                         onClick={() => handleClickDeleteProduct(product._id)}>
                                                         Eliminar
                                                     </Button>
-                                                </>
+                                                </div>
                                                 :
                                                 <div style={{ display: 'flex' }}>
                                                     <Button onClick={() => handleDelFromCart(product._id, product.quantity)}>-</Button>
@@ -434,7 +442,7 @@ const TableC = ({ idPage, array, setIsLoadingHook }) => {
                                         <td>{user.fullName}</td>
                                         <td>{user.email}</td>
                                         <td>{user.phone}</td>
-                                        <td>
+                                        <td style={{textAlign: 'center'}}>
                                             <Button
                                                 title={user.active ? 'Bloquear usuario' : 'Desbloquear usuario'}
                                                 variant={user.active ? 'warning' : 'success'}
@@ -443,7 +451,7 @@ const TableC = ({ idPage, array, setIsLoadingHook }) => {
                                                 {user.active ? 'Bloquear' : 'Desbloquear'}
                                             </Button>
                                         </td>
-                                        <td>
+                                        <td style={{textAlign: 'center'}}>
                                             <Button
                                                 title={user.role === 'admin' ? 'Cambiar a usuario' : 'Cambiar a administrador'}
                                                 variant={user.role === 'admin' ? 'primary' : 'info'}
