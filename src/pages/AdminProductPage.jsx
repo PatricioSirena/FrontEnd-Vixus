@@ -16,6 +16,7 @@ const AdminProductPage = () => {
             setIsLoading(false)
         } catch (error) {
             console.log(error);
+            // Configurar Log4js en front para guardar todos los errores en vez de console.log
         }
     }
 

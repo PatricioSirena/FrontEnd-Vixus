@@ -65,12 +65,6 @@ const FormC = ({ idPage }) => {
     const handleClickRegister = async (ev) => {
         ev.preventDefault()
         const { fullName, email, password, phone } = formData
-        // if (!fullName || !email || !password || !passwordControl || !phone) {
-        //     return alert('Debe completar todos los campos')
-        // }
-        // if (password !== passwordControl) {
-        //     return alert('Las contraseñas no son iguales')
-        // }
         try {
             const result = await clienteAxios.post('/users', { fullName, email, password, phone })
             alert(result.data.msg)
@@ -85,9 +79,6 @@ const FormC = ({ idPage }) => {
     const handleClickLogin = async (ev) => {
         ev.preventDefault()
         const { email, password } = formData
-        // if (!email || !password) {
-        //     return alert('Debe completar los campos')
-        // }
         try {
             const result = await clienteAxios.post('/users/login', { email, password })
             sessionStorage.setItem('userId', JSON.stringify(result.data.id))

@@ -16,6 +16,7 @@ import CategoryPage from '../pages/CategoryPage'
 import ErrorPage from '../pages/ErrorPage'
 import ProductPage from '../pages/ProductPage'
 import SearchPage from "../pages/SearchPage"
+import UserOrdersPage from "../pages/UserOrdersPage"
 
 
 const RoutesViews = () => {
@@ -51,6 +52,11 @@ const RoutesViews = () => {
                 <Route path="/userFavorites" element={
                     <PrivateRoute routeRole={'user'}>
                         <UserFavoritePage />
+                    </PrivateRoute>
+                }/>
+                <Route path="/userOrders" element={
+                    <PrivateRoute routeRole={'user'}>
+                        <UserOrdersPage />
                     </PrivateRoute>
                 }/>
                 <Route path="/" element={<HomePage />} />

@@ -1,7 +1,7 @@
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import {  NavLink, useNavigate } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import { Button, Form } from 'react-bootstrap';
 import { useState } from 'react';
@@ -12,7 +12,7 @@ const NavbarC = () => {
     const navigate = useNavigate()
     const token = JSON.parse(sessionStorage.getItem('token'))
     const role = JSON.parse(sessionStorage.getItem('role'))
-    
+
     const handleClickLogout = (e) => {
         e.preventDefault()
         sessionStorage.removeItem('token')
@@ -21,12 +21,12 @@ const NavbarC = () => {
         navigate('/')
     }
 
-    const handleChangeSearchKeyWord = (ev) =>{
-        setToSearch(ev.target.value)        
+    const handleChangeSearchKeyWord = (ev) => {
+        setToSearch(ev.target.value)
     }
 
-    const handleClickSearch = () =>{
-        if(toSearch){
+    const handleClickSearch = () => {
+        if (toSearch) {
             navigate(`/searchPage/${toSearch}`)
             setToSearch('')
         }
@@ -45,8 +45,8 @@ const NavbarC = () => {
                             <NavLink to="*" className={'nav-link'}>Contacto</NavLink>
                         </Nav>
                         <Form className="ms-auto">
-                            <Form.Group style={{display: 'flex', justifyContent: 'end', margin: '0 1em'}} controlId='formBasicSearch'>
-                                <Form.Control type='text' placeholder='Buscar' value={toSearch} name='keyWord' onChange={handleChangeSearchKeyWord}/>
+                            <Form.Group style={{ display: 'flex', justifyContent: 'end', margin: '0 1em' }} controlId='formBasicSearch'>
+                                <Form.Control type='text' placeholder='Buscar' value={toSearch} name='keyWord' onChange={handleChangeSearchKeyWord} />
                                 <Button onClick={handleClickSearch}>Buscar</Button>
                             </Form.Group>
                         </Form>
@@ -65,7 +65,7 @@ const NavbarC = () => {
                                             style={{ display: 'block' }}
                                             to={role === 'mainAdmin' ? '/adminProducts' : role === 'admin' ? '/adminProducts' : '/userCart'}
                                             className={`btn btn-light`}>
-                                            {role === 'mainAdmin' ? 'Panel de Productos' : role === 'admin' ? 'Panel de Productos' :'Carrito'}
+                                            {role === 'mainAdmin' ? 'Panel de Productos' : role === 'admin' ? 'Panel de Productos' : 'Carrito'}
                                         </NavLink>
                                         <NavLink
                                             style={{ display: 'block' }}
@@ -73,6 +73,15 @@ const NavbarC = () => {
                                             className={`btn btn-light`}>
                                             {role === 'mainAdmin' ? 'Panel de Usuarios' : role === 'admin' ? 'Panel de Usuarios' : 'Favoritos'}
                                         </NavLink>
+                                        {
+                                            role === 'user' &&
+                                            <NavLink
+                                                style={{ display: 'block' }}
+                                                to='/userOrders'
+                                                className={'btn btn-light'}>
+                                                Mis Compras
+                                            </NavLink>
+                                        }
                                         <a
                                             style={{ display: 'block' }}
                                             to='#'
