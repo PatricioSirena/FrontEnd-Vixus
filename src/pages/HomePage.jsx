@@ -3,6 +3,7 @@ import CardC from "../components/CardC"
 import Carrousel from "../components/Carrousel"
 import { useEffect, useState } from "react"
 import clienteAxios from "../helpers/axios"
+import '../styles/HomeStyle.css'
 
 const HomePage = () => {
     const [latestProducts, setLatestProducts] = useState([])
@@ -45,19 +46,17 @@ const HomePage = () => {
                     )}
                 </Row>
             </Container>
+            <Container fluid className="mx-5">
             <CardC cardId={'cardLinks'} />
-            <Container>
-                <Row>
+            </Container>
+            <Container className="latestProductsContainer">
                     {
                         latestProducts.map(product =>
-                            <Col key={product._id}>
-                                <CardC cardId={'productCard'} productId={product._id} 
+                                <CardC key={product._id} cardId={'productCard'} productId={product._id} 
                                 productName={product.name} productPrice={product.price}
                                 mainImage={product.mainPicture} productStock={product.quantity}/>
-                            </Col>
                         )
                     }
-                </Row>
             </Container>
         </>
     )

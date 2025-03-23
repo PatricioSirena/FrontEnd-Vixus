@@ -1,0 +1,16 @@
+body{
+    overflow-x: hidden;
+}
+
+.latestProductsContainer {
+    display: flex;
+    overflow-x: auto;
+    padding: 10px;
+    scroll-snap-type: x mandatory;
+}
+
+.latestProductsContainer > * {
+    flex: 0 0 auto;
+    margin-right: 10px;
+    scroll-snap-align: start;
+}

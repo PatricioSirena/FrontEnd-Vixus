@@ -1,17 +1,16 @@
 import TableC from "../components/TableC"
 import { useEffect, useState } from "react"
-import clienteAxios, {configHeaders} from "../helpers/axios"
-import Form  from "react-bootstrap/Form"
+import clienteAxios, { configHeaders } from "../helpers/axios"
+import Form from "react-bootstrap/Form"
 
 const AdminProductPage = () => {
     const [products, setProducts] = useState([])
     const [isLoading, setIsLoading] = useState(true)
     const [searchWord, setSearchWord] = useState('')
 
-
-    const getStockProducts = async () =>{
+    const getStockProducts = async () => {
         try {
-            const resultProducts = await clienteAxios.get('/products', configHeaders)        
+            const resultProducts = await clienteAxios.get('/products', configHeaders)
             setProducts(resultProducts.data)
             setIsLoading(false)
         } catch (error) {
@@ -20,12 +19,13 @@ const AdminProductPage = () => {
         }
     }
 
-    const handleChangeSearch = (ev) =>{
+
+    const handleChangeSearch = (ev) => {
         setSearchWord(ev.target.value)
     }
 
     const filteredProducts = products.filter(product =>
-        product.name.toLowerCase().includes(searchWord.toLowerCase()) 
+        product.name.toLowerCase().includes(searchWord.toLowerCase())
         || product.description.toLowerCase().includes(searchWord.toLowerCase())
         || product.color.toLowerCase().includes(searchWord.toLowerCase())
         || product.size.toLowerCase().includes(searchWord.toLowerCase())
@@ -34,19 +34,19 @@ const AdminProductPage = () => {
 
     useEffect(() => {
         if (isLoading) {
-            getStockProducts()            
+            getStockProducts()
         }
     }, [isLoading])
-    
+
 
     return (
         <>
             <Form>
                 <Form.Group controlId="formBasicSearch">
-                    <Form.Control onChange={handleChangeSearch} style={{width: '12em', margin: '1em 8em 0px'}} value={searchWord} placeholder="Buscar producto"/>
+                    <Form.Control onChange={handleChangeSearch} style={{ width: '12em', margin: '1em 8em 0px' }} value={searchWord} placeholder="Buscar producto" />
                 </Form.Group>
             </Form>
-            <TableC array={filteredProducts} idPage={'productAdmin'} setIsLoadingHook={setIsLoading}/>
+            <TableC array={filteredProducts} idPage={'productAdmin'} setIsLoadingHook={setIsLoading} />
         </>
     )
 }

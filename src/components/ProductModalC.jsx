@@ -51,6 +51,15 @@ const ProductModalC = ({ idModal, show, showNew, handleClickCancelProductUpdate,
                             </Form.Control.Feedback>
                         </Form.Group>
 
+                        <div className="categoryC">
+                            <Form.Group className="mb-3" controlId="formBasicCategory">
+                                <Form.Label>Categoría</Form.Label>
+                                <Form.Select type="text" name='category' value={productInfo?.category}>
+                                    
+                                </Form.Select>
+                            </Form.Group>
+                        </div>
+
                         <Form.Group className="mb-3" controlId="formBasicColor">
                             <Form.Label>Color</Form.Label>
                             <Form.Control 

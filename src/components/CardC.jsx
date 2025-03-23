@@ -29,7 +29,6 @@ const CardC = ({ cardId, imgLink, infoCardtext, productId, productName, productP
                             />
                             <Card.ImgOverlay style={{ height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                 <Card.Title style={{ color: 'white' }}>Chinos</Card.Title>
-                                <Button style={{ display: 'none' }} variant="light">Go somewhere</Button>
                             </Card.ImgOverlay>
                         </Link>
                     </Card>
