@@ -73,7 +73,7 @@ const TableC = ({ idPage, array, setIsLoadingHook }) => {
         handleShowEdit()
     }
 
-    const handleChageProductInfo = (ev) => {
+    const handleChangeProductInfo = (ev) => {
         const { name, value } = ev.target
         let newErrorMessage = { ...errorMessage };
 
@@ -132,7 +132,6 @@ const TableC = ({ idPage, array, setIsLoadingHook }) => {
             }
         } catch (error) {
             console.log(error);
-
         }
     }
 
@@ -222,7 +221,7 @@ const TableC = ({ idPage, array, setIsLoadingHook }) => {
                 handleCloseNew()
             }
         } catch (error) {
-            console.log(error);
+            alert(error.response.data.msg);
         }
     }
 
@@ -261,11 +260,12 @@ const TableC = ({ idPage, array, setIsLoadingHook }) => {
             const newProduct = await clienteAxios.post('/products', product, configHeaders)
             if (newProduct.status === 201) {
                 for (const item of productImages) {
-                    const result = await clienteAxios.post(`/products/addProductImage/${newProduct.data.productId}`, { imageUrl: item.url, imageId: item.imageId }, configHeaders)
-                    if (result.status !== 200) {
-                        alert('Tuvimos un problema para agregar las imagenes del producto')
-                        return
-                    } else {
+                    try {
+                        await clienteAxios.post(`/products/addProductImage/${newProduct.data.productId}`, { imageUrl: item.url, imageId: item.imageId }, configHeaders)
+                    } catch (error) {
+                        alert(error.response.data.msg)
+                    }} 
+                }
                         alert(newProduct.data.msg)
                         setIsLoadingHook(true)
                         setErrorMessage({ name: '', price: '', description: '' })
@@ -279,17 +279,9 @@ const TableC = ({ idPage, array, setIsLoadingHook }) => {
                             quantity: ''
                         })
                         handleCloseNew()
-                    }
-                }
-            } else {
-                setTimeout(() => {
-                    alert('Tuvimos un problema para agregar el producto, intenta nuevamente')
-                }, 500);
-            }
         } catch (error) {
-            console.log(error);
+            alert(error.response.data.msg);
         }
-
     }
 
     const handleClickChangeUserStatus = async (userId, userStatus) => {
@@ -346,7 +338,8 @@ const TableC = ({ idPage, array, setIsLoadingHook }) => {
                 idModal={'newProduct'}
                 showNew={showNew}
                 handleClickCancelProductUpdate={handleClickCancelProductUpdate}
-                handleChageProductInfo={handleChageProductInfo}
+                handleChangeProductInfo={handleChangeProductInfo}
+                productInfo={productInfo}
                 errorMessage={errorMessage}
                 sizeOptions={sizeOptions}
                 handleChangeNewImage={handleChangeNewImage}
@@ -405,7 +398,7 @@ const TableC = ({ idPage, array, setIsLoadingHook }) => {
                                                         show={showEdit}
                                                         handleClickCancelProductUpdate={handleClickCancelProductUpdate}
                                                         productInfo={productInfo}
-                                                        handleChageProductInfo={handleChageProductInfo}
+                                                        handleChangeProductInfo={handleChangeProductInfo}
                                                         errorMessage={errorMessage}
                                                         sizeOptions={sizeOptions}
                                                         handleChangeNewImage={handleChangeNewImage}

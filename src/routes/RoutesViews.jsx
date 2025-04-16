@@ -3,7 +3,6 @@ import NavbarC from '../components/NavbarC'
 import FooterC from '../components/FooterC'
 import PrivateRoute from "../helpers/PrivateRoute"
 import AdminPage from '../pages/AdminPage'
-import AdminCategoryPage from '../pages/AdminCategoryPage'
 import AdminUserPage from '../pages/AdminUserPage'
 import AdminProductPage from '../pages/AdminProductPage'
 import UserCartPage from '../pages/UserCartPage'
@@ -27,11 +26,6 @@ const RoutesViews = () => {
                 <Route path="/adminPage" element={
                     <PrivateRoute routeRole={['mainAdmin', 'admin']}>
                         <AdminPage />
-                    </PrivateRoute>
-                }/>
-                <Route path="/adminCategory" element={
-                    <PrivateRoute routeRole={['mainAdmin', 'admin']}>
-                        <AdminCategoryPage />
                     </PrivateRoute>
                 }/>
                 <Route path="/adminUsers" element={

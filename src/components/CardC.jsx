@@ -6,6 +6,8 @@ import clienteAxios, { configHeaders } from '../helpers/axios';
 
 const CardC = ({ cardId, imgLink, infoCardtext, productId, productName, productPrice, mainImage, setIsLoadingHook, productStock}) => {
 
+    const role = JSON.parse(sessionStorage.getItem('role'));
+    
     const handleClickDelFromFav = async () => {
         try {
             const result = await clienteAxios.post(`/products/delFromFavorite/${productId}`, {}, configHeaders)
@@ -40,7 +42,7 @@ const CardC = ({ cardId, imgLink, infoCardtext, productId, productName, productP
                             </Card.Body>
                         </Card>
                         :
-                        <Card style={{ width: '11rem', margin: '2rem' }}>
+                        <Card style={cardId === 'cardCategory' && role === 'mainAdmin' || role === 'admin' ? { width: '11rem', margin: '.5em 2em 2em 2em' } : { width: '11rem', margin: '2rem' }}>
                                 <Card.Img
                                     title={productName}
                                     variant='top'

@@ -3,7 +3,7 @@ import Form from 'react-bootstrap/Form';
 import { Button, Col, Container, Row } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 
-const ProductModalC = ({ idModal, show, showNew, handleClickCancelProductUpdate, productInfo, handleChageProductInfo, errorMessage, sizeOptions, handleChangeNewImage, productImages, handleClickDelImgFromProduct, handleClickUpdateProduct, handleClickSaveProduct, saveProduct}) => {
+const ProductModalC = ({ idModal, show, showNew, handleClickCancelProductUpdate, productInfo, handleChangeProductInfo, errorMessage, sizeOptions, handleChangeNewImage, productImages, handleClickDelImgFromProduct, handleClickUpdateProduct, handleClickSaveProduct, saveProduct}) => {
     return (
         <>
             <Modal show={idModal === 'editProduct' ? show : showNew} onHide={()=>handleClickCancelProductUpdate(idModal)}>
@@ -18,7 +18,7 @@ const ProductModalC = ({ idModal, show, showNew, handleClickCancelProductUpdate,
                                 type="text"
                                 name='name'
                                 value={productInfo?.name || ''}
-                                onChange={(ev) => handleChageProductInfo(ev)}
+                                onChange={(ev) => handleChangeProductInfo(ev)}
                                 isInvalid={!!errorMessage?.name} />
                             <Form.Control.Feedback type="invalid">
                                 {errorMessage?.name}
@@ -31,7 +31,7 @@ const ProductModalC = ({ idModal, show, showNew, handleClickCancelProductUpdate,
                                 type="text"
                                 name='price'
                                 value={productInfo?.price || ''}
-                                onChange={(ev) => handleChageProductInfo(ev)}
+                                onChange={(ev) => handleChangeProductInfo(ev)}
                                 isInvalid={!!errorMessage?.price} />
                             <Form.Control.Feedback type="invalid">
                                 {errorMessage?.price}
@@ -44,21 +44,12 @@ const ProductModalC = ({ idModal, show, showNew, handleClickCancelProductUpdate,
                                 type="text"
                                 name='description'
                                 value={productInfo?.description || ''}
-                                onChange={(ev) => handleChageProductInfo(ev)}
+                                onChange={(ev) => handleChangeProductInfo(ev)}
                                 isInvalid={!!errorMessage?.description} />
                             <Form.Control.Feedback type="invalid">
                                 {errorMessage?.description}
                             </Form.Control.Feedback>
                         </Form.Group>
-
-                        <div className="categoryC">
-                            <Form.Group className="mb-3" controlId="formBasicCategory">
-                                <Form.Label>Categoría</Form.Label>
-                                <Form.Select type="text" name='category' value={productInfo?.category}>
-                                    
-                                </Form.Select>
-                            </Form.Group>
-                        </div>
 
                         <Form.Group className="mb-3" controlId="formBasicColor">
                             <Form.Label>Color</Form.Label>
@@ -66,7 +57,7 @@ const ProductModalC = ({ idModal, show, showNew, handleClickCancelProductUpdate,
                             type="text" 
                             name='color' 
                             value={productInfo?.color || ''} 
-                            onChange={(ev) => handleChageProductInfo(ev)} 
+                            onChange={(ev) => handleChangeProductInfo(ev)} 
                             isInvalid={!!errorMessage?.color}/>
                             <Form.Control.Feedback type="invalid">
                                 {errorMessage?.color}
@@ -75,7 +66,7 @@ const ProductModalC = ({ idModal, show, showNew, handleClickCancelProductUpdate,
 
                         <Form.Group className="mb-3" controlId="formBasicSize">
                             <Form.Label>Talle</Form.Label>
-                            <Form.Select type="text" name='size' value={productInfo?.size} onChange={(ev) => handleChageProductInfo(ev)}>
+                            <Form.Select type="text" name='size' value={productInfo?.size} onChange={(ev) => handleChangeProductInfo(ev)}>
                                 {sizeOptions.map(size =>
                                     <option key={size.value} value={size.value}>{size.label}</option>
                                 )}
@@ -88,7 +79,7 @@ const ProductModalC = ({ idModal, show, showNew, handleClickCancelProductUpdate,
                             type="text" 
                             name='quantity' 
                             value={productInfo?.quantity || ''} 
-                            onChange={(ev) => handleChageProductInfo(ev)} 
+                            onChange={(ev) => handleChangeProductInfo(ev)} 
                             isInvalid={!!errorMessage?.quantity}/>
                             <Form.Control.Feedback type="invalid">
                                 {errorMessage?.quantity}
@@ -133,7 +124,7 @@ ProductModalC.propTypes = {
     showNew: PropTypes.bool,
     handleClickCancelProductUpdate: PropTypes.func,
     productInfo: PropTypes.object,
-    handleChageProductInfo: PropTypes.func,
+    handleChangeProductInfo: PropTypes.func,
     errorMessage: PropTypes.object,
     sizeOptions: PropTypes.array,
     handleChangeNewImage: PropTypes.func,

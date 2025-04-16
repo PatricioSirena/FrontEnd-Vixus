@@ -1,12 +1,12 @@
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import { Link, NavLink, useNavigate } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import { Dropdown } from 'react-bootstrap';
-import { Button, Form } from 'react-bootstrap';
+import { Button, Form, Modal } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
 import 'font-awesome/css/font-awesome.min.css';
-import clienteAxios from '../helpers/axios';
+import clienteAxios, { configHeaders } from '../helpers/axios';
 
 const NavbarC = () => {
     const [showCategory, setShowCategory] = useState(false);
@@ -14,9 +14,15 @@ const NavbarC = () => {
     const [toSearch, setToSearch] = useState('');
     const [categories, setCategories] = useState([])
     const [isLoading, setIsLoading] = useState('true')
+    const [showNewCategory, setShowNewCategory] = useState(false);
+    const [categoryName, setCategoryName] = useState('')
+    const [errorMessage, setErrorMessage] = useState('')
     const navigate = useNavigate();
     const token = JSON.parse(sessionStorage.getItem('token'));
     const role = JSON.parse(sessionStorage.getItem('role'));
+
+    const handleCloseCategoryModal = () => setShowNewCategory(false);
+    const handleShowCategoryModal = () => setShowNewCategory(true);
 
 
     const handleClickLogout = (e) => {
@@ -42,6 +48,62 @@ const NavbarC = () => {
     const handleClickCategoryPage = (ev, category) => {
         ev.preventDefault()
         navigate(`/categoryPage/${category}`);
+    }
+
+    const handleChangeCategoryName = (ev) => {
+        const name = ev.target.value
+
+        if (name.length < 4 || name.length > 30) {
+            setErrorMessage('El nombre de la categoria debe tener entre 4 y 30 caracteres')
+            return
+        } else {
+            setErrorMessage('')
+            setCategoryName(name)
+        }
+    }
+
+    const handleClickCancelNewCategory = () => {
+        setCategoryName('')
+        setErrorMessage('')
+        handleCloseCategoryModal()
+    }
+
+    const handleClickCreateCategory = async () => {
+        try {
+            const result = await clienteAxios.post('/products/createCategory', { name: categoryName }, configHeaders)
+            if (result.status === 201) {
+                alert(result.data.msg)
+                setIsLoading(true)
+                handleClickCancelNewCategory()
+            }
+        }
+        catch (error) {
+            alert(error.response.data.msg)
+        }
+    }
+
+    const handleClickDeleteCategory = async (ev, categoryId, categoryName) => {
+        ev.preventDefault()
+        const confirmDelete = window.confirm(`Está seguro de que desea eliminar la categoría ${categoryName}?`)
+        const currentPath = decodeURIComponent(window.location.pathname)
+        const categoryPath = `/categoryPage/${categoryName}`
+        if (confirmDelete) {
+            try {
+                const result = await clienteAxios.delete(`/products/deleteCategory/${categoryId}`, configHeaders)
+                if (result.status === 200 && currentPath === categoryPath) {
+                    alert(result.data.msg)
+                    setTimeout(() => {
+                        navigate('/')
+                    }, 500);
+                    setIsLoading(true)
+                } else if (result.status === 200) {
+                    alert(result.data.msg)
+                    setIsLoading(true)
+                }
+            } catch (error) {
+                alert(error.response.data.msg)
+            }
+        }
     }
 
     useEffect(() => {
@@ -89,11 +151,50 @@ const NavbarC = () => {
                                 <Dropdown.Menu>
                                     {
                                         categories.map((category) => (
-                                            <Dropdown.Item as={Link} key={category.id} onClick={(ev) => handleClickCategoryPage(ev, category.name)} style={{ textDecoration: 'none', color: 'black' }}>
-                                                {category.name}
-                                            </Dropdown.Item>
+                                            <div className="categoryItem" key={category.id} style={(role === 'mainAdmin' || role === 'admin') ? { display: 'flex', alignItems: 'center', minWidth: '10em', maxWidth: '12em' } : { maxWidth: '10em'}}>
+                                                <Dropdown.Item onClick={(ev) => handleClickCategoryPage(ev, category.name)} style={role === 'mainAdmin' || role === 'admin' ? { width: '80%', textAlign: 'center', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' } : { width: '100%', textAlign: 'center', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }} title={category.name}>
+                                                    {category.name}
+                                                </Dropdown.Item>
+                                                <div className='btn' style={role === 'user' || role === null ? { display: 'none' } : { width: '20%', paddingLeft: '.7em' }} onClick={(ev) => handleClickDeleteCategory(ev, category.id, category.name)}>X</div>
+                                            </div>
                                         )
                                         )}
+                                    {
+                                        (role === 'mainAdmin' || role === 'admin') &&
+                                        <Dropdown.Item as={Button} style={{ textDecoration: 'none', textAlign: 'center', color: 'black' }} onClick={handleShowCategoryModal}>
+                                            Crear Categoria
+                                        </Dropdown.Item>
+                                    }
+                                    <Modal show={showNewCategory} onHide={handleClickCancelNewCategory}>
+                                        <Modal.Header closeButton>
+                                            <Modal.Title>Nueva Categoria</Modal.Title>
+                                        </Modal.Header>
+                                        <Modal.Body>
+                                            <Form>
+                                                <Form.Group className="mb-3" controlId="formBasicName" style={{ height: '5em' }}>
+                                                    <Form.Label>Nombre</Form.Label>
+                                                    <Form.Control
+                                                        type="text"
+                                                        name='name'
+                                                        onChange={(ev) => handleChangeCategoryName(ev)}
+                                                        isInvalid={!!errorMessage} />
+                                                    <Form.Control.Feedback type="invalid">
+                                                        {errorMessage}
+                                                    </Form.Control.Feedback>
+                                                </Form.Group>
+                                            </Form>
+                                        </Modal.Body>
+                                        <Modal.Footer>
+                                            <Button variant="secondary" onClick={handleClickCancelNewCategory}>
+                                                Cancelar
+                                            </Button>
+                                            <Button variant="primary"
+                                                onClick={handleClickCreateCategory}
+                                                disabled={errorMessage !== '' || categoryName === ''}>
+                                                Guardar
+                                            </Button>
+                                        </Modal.Footer>
+                                    </Modal>
                                 </Dropdown.Menu>
                             </Dropdown>
                             <NavLink to="*" className={'nav-link'}>Contacto</NavLink>
@@ -124,10 +225,7 @@ const NavbarC = () => {
                                             <Dropdown.Item as={NavLink} to={role === 'mainAdmin' ? '/adminProducts' : role === 'admin' ? '/adminProducts' : '/userCart'}>{role === 'mainAdmin' ? 'Panel de productos' : role === 'admin' ? 'Panel de productos' : 'Carrito'}</Dropdown.Item>
                                             <Dropdown.Item as={NavLink} to={role === 'mainAdmin' ? '/adminUsers' : role === 'admin' ? '/adminUsers' : '/userFavorites'}>{role === 'mainAdmin' ? 'Panel de usuarios' : role === 'admin' ? 'Panel de usuarios' : 'Favoritos'}</Dropdown.Item>
                                             {
-                                                role === 'user' ?
-                                                <Dropdown.Item as={NavLink} to='/userOrders'>Mis Compras</Dropdown.Item>
-                                            :
-                                            <Dropdown.Item as={NavLink} to="/adminCategory">Categorias</Dropdown.Item>   
+                                                role === 'user' && <Dropdown.Item as={NavLink} to='/userOrders'>Mis Compras</Dropdown.Item>
                                             }
                                             <Dropdown.Item className='btn btn-light' as="a" onClick={handleClickLogout}>Salir</Dropdown.Item>
                                         </Dropdown.Menu>
