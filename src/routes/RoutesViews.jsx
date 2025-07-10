@@ -2,7 +2,6 @@ import { Route, Routes } from "react-router-dom"
 import NavbarC from '../components/NavbarC'
 import FooterC from '../components/FooterC'
 import PrivateRoute from "../helpers/PrivateRoute"
-import AdminPage from '../pages/AdminPage'
 import AdminUserPage from '../pages/AdminUserPage'
 import AdminProductPage from '../pages/AdminProductPage'
 import UserCartPage from '../pages/UserCartPage'
@@ -16,6 +15,7 @@ import ErrorPage from '../pages/ErrorPage'
 import ProductPage from '../pages/ProductPage'
 import SearchPage from "../pages/SearchPage"
 import UserOrdersPage from "../pages/UserOrdersPage"
+import AllProductsPage from "../pages/AllProductsPage"
 
 
 const RoutesViews = () => {
@@ -23,11 +23,6 @@ const RoutesViews = () => {
         <>
             <NavbarC />
             <Routes>
-                <Route path="/adminPage" element={
-                    <PrivateRoute routeRole={['mainAdmin', 'admin']}>
-                        <AdminPage />
-                    </PrivateRoute>
-                }/>
                 <Route path="/adminUsers" element={
                     <PrivateRoute routeRole={['mainAdmin', 'admin']}>
                         <AdminUserPage />
@@ -60,6 +55,7 @@ const RoutesViews = () => {
                 <Route path="/searchPage/:toSearch" element={<SearchPage />} />
                 <Route path="/categoryPage/:categoryName" element={<CategoryPage/>} />
                 <Route path="/product/:productId" element={<ProductPage />} />
+                <Route path="/allProductsPage" element={<AllProductsPage />} />
                 <Route path="*" element={<ErrorPage />} />
             </Routes>
             <FooterC />

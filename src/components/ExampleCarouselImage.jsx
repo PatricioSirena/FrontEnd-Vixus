@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 const ExampleCarouselImage = ({ src }) => {
     return (
         <img
-            className="d-block w-100"
+            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
             src={src}
         />
     );
