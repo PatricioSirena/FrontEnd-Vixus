@@ -1,0 +1,21 @@
+.deleteImageButton {
+    position: absolute;
+    top: .2em;
+    right: 1em;
+    z-index: 1;
+    background-color: transparent;
+    color: grey;
+    border: none;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.8em
+}
+
+.deleteImageButton:hover {
+    color: red;
+}
+

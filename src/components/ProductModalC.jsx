@@ -1,14 +1,17 @@
 import Modal from 'react-bootstrap/Modal';
 import Form from 'react-bootstrap/Form';
-import { Button, Col, Container, Row } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 
-const ProductModalC = ({ idModal, show, showNew, handleClickCancelProductUpdate, productInfo, handleChangeProductInfo, errorMessage, sizeOptions, handleChangeNewImage, productImages, handleClickDelImgFromProduct, handleClickUpdateProduct, handleClickSaveProduct, saveProduct}) => {
+const ProductModalC = ({ idModal, showEdit, showNew, handleClickCancelProductUpdate, productInfo, handleChangeProductInfo, errorMessage, handleClickSaveOrUpdateProduct, saveProduct }) => {
     return (
         <>
-            <Modal show={idModal === 'editProduct' ? show : showNew} onHide={()=>handleClickCancelProductUpdate(idModal)}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Producto</Modal.Title>
+            <Modal show={idModal === 'editProduct' ? showEdit : showNew} style={{ opacity: '0.2 !important' }}>
+                <Modal.Header style={{ position: 'relative' }}>
+                    <Modal.Title
+                        style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
+                        {idModal === 'newProduct' ? 'Nuevo Producto' : `Producto: ${productInfo.name}`}
+                    </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form>
@@ -51,66 +54,21 @@ const ProductModalC = ({ idModal, show, showNew, handleClickCancelProductUpdate,
                             </Form.Control.Feedback>
                         </Form.Group>
 
-                        <Form.Group className="mb-3" controlId="formBasicColor">
-                            <Form.Label>Color</Form.Label>
-                            <Form.Control 
-                            type="text" 
-                            name='color' 
-                            value={productInfo?.color || ''} 
-                            onChange={(ev) => handleChangeProductInfo(ev)} 
-                            isInvalid={!!errorMessage?.color}/>
-                            <Form.Control.Feedback type="invalid">
-                                {errorMessage?.color}
-                            </Form.Control.Feedback>
-                        </Form.Group>
-
-                        <Form.Group className="mb-3" controlId="formBasicSize">
-                            <Form.Label>Talle</Form.Label>
-                            <Form.Select type="text" name='size' value={productInfo?.size} onChange={(ev) => handleChangeProductInfo(ev)}>
-                                {sizeOptions.map(size =>
-                                    <option key={size.value} value={size.value}>{size.label}</option>
-                                )}
-                            </Form.Select>
-                        </Form.Group>
-
-                        <Form.Group className="mb-3" controlId="formBasicStock">
-                            <Form.Label>Stock</Form.Label>
-                            <Form.Control 
-                            type="text" 
-                            name='quantity' 
-                            value={productInfo?.quantity || ''} 
-                            onChange={(ev) => handleChangeProductInfo(ev)} 
-                            isInvalid={!!errorMessage?.quantity}/>
-                            <Form.Control.Feedback type="invalid">
-                                {errorMessage?.quantity}
-                            </Form.Control.Feedback>
-                        </Form.Group>
-                        <Form.Group className="mb-3" controlId="formBasicPassword">
-                            <Form.Label>Imagen</Form.Label>
-                            <Form.Control type="file" onChange={(ev) => handleChangeNewImage(ev.target.files[0])} />
-                        </Form.Group>
-
-                        <Container>
-                            <Row>
-                                {
-                                    productImages.map(image =>
-                                        <Col key={image.imageId}>
-                                            <Button onClick={() => handleClickDelImgFromProduct(image.imageId)}>X</Button>
-                                            <img src={image.url} alt="" />
-                                        </Col>
-                                    )
-                                }
-                            </Row>
-                        </Container>
-                                
-                        <Button 
-                        variant="primary" 
-                        type="submit" 
-                        onClick={idModal === 'editProduct' ? handleClickUpdateProduct : handleClickSaveProduct}
-                        disabled={saveProduct ? false: true}>
+                        <Button
+                            variant="primary"
+                            type="submit"
+                            onClick={(ev) => handleClickSaveOrUpdateProduct(ev, idModal)}
+                            disabled={saveProduct ? false : true}>
                             {idModal === 'editProduct' ? 'Actualizar Producto' : 'Guardar'}
                         </Button>
-                        <p style={{margin: '1em 0 .5em 0', color: '#dc3545'}}>{errorMessage.save}</p>
+                        <Button
+                            variant="secondary"
+                            type="button"
+                            onClick={(ev) => handleClickCancelProductUpdate(ev, idModal)}
+                            style={{ marginLeft: '1em' }}>
+                            Cancelar
+                        </Button>
+                        <p style={{ margin: '1em 0 .5em 0', color: '#dc3545' }}>{errorMessage.save}</p>
                     </Form>
                 </Modal.Body>
             </Modal>
@@ -120,18 +78,13 @@ const ProductModalC = ({ idModal, show, showNew, handleClickCancelProductUpdate,
 
 ProductModalC.propTypes = {
     idModal: PropTypes.string,
-    show: PropTypes.bool,
+    showEdit: PropTypes.bool,
     showNew: PropTypes.bool,
     handleClickCancelProductUpdate: PropTypes.func,
     productInfo: PropTypes.object,
     handleChangeProductInfo: PropTypes.func,
     errorMessage: PropTypes.object,
-    sizeOptions: PropTypes.array,
-    handleChangeNewImage: PropTypes.func,
-    productImages: PropTypes.array,
-    handleClickDelImgFromProduct: PropTypes.func,
-    handleClickUpdateProduct: PropTypes.func,
-    handleClickSaveProduct: PropTypes.func,
+    handleClickSaveOrUpdateProduct: PropTypes.func,
     saveProduct: PropTypes.bool
 }
 

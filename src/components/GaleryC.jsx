@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import { Button, Col, Container, Row } from "react-bootstrap"
 import PropTypes from 'prop-types'
+import '../styles/GaleryCStyle.css'
 
 const GaleryC = ({ galery, deleteImageFunction }) => {
     const [imgToShow, setImgToShow] = useState('')
@@ -16,7 +17,7 @@ const GaleryC = ({ galery, deleteImageFunction }) => {
     }
 
     useEffect(() => {
-        if(!galery.some(image => image.imageUrl === imgToShow)) {
+        if (!galery.some(image => image.imageUrl === imgToShow)) {
             setImgToShow(galery[0]?.imageUrl || '')
         }
     }, [galery, imgToShow])
@@ -35,26 +36,12 @@ const GaleryC = ({ galery, deleteImageFunction }) => {
                                 ))
                             }
                         </Col>
-                        <Col sm={10} style={{ width: '25em', height: '25em', position: 'relative' }}>
-                            <Button
-                                style={{
-                                    position: 'absolute',
-                                    top: '.2em',
-                                    right: '1em',
-                                    zIndex: 1,
-                                    backgroundColor: 'transparent',
-                                    color: 'grey',
-                                    border: 'none',
-                                    width: '30px',
-                                    height: '30px',
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                    fontWeight: 'bold',
-                                    fontSize: '1.8em'
-                                }}
-                                onClick={() => deleteImageFunction(imgToShow)}>x</Button>
-                            <img src={imgToShow} alt="Imagen de producto no disponible" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
+                        <Col sm={10} style={{ width: '22em', height: '25em', position: 'relative' }}>
+                            <button
+                                className="deleteImageButton"
+                                onClick={() => deleteImageFunction(imgToShow)}>x</button>
+                            <img src={imgToShow} alt="Imagen de producto no disponible"
+                                style={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', display: 'block', boxShadow: '1px 1px 20px grey', borderRadius: '5px' }} />
                         </Col>
                     </Row>
                     :
