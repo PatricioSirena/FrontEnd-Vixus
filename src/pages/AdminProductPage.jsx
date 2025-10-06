@@ -161,8 +161,8 @@ const AdminProductPage = () => {
         }
     }
 
-    const handleClickSetEditProduct = (product) => {
-        setProductInfo(product)
+    const handleClickSetEditProduct = (item) => {
+        setProductInfo({name: item.name, price: item.price, description: item.description})
         handleShowEdit()
     }
 
@@ -201,11 +201,10 @@ const AdminProductPage = () => {
 
     const handleClickSaveOrUpdateProduct = async (ev, modalId) => {
         ev.preventDefault()
-        const product = {
+        const editedProduct = {
             ...productInfo,
             price: productInfo.price === '' ? 0 : productInfo.price,
         }
-        const { active, variants, createdAt, categories, __v, _id, ...editedProduct } = product;
         try {
             if (modalId === 'newProduct') {
                 const newProduct = await clienteAxios.post('/products', editedProduct, configHeaders)

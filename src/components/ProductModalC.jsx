@@ -7,10 +7,11 @@ const ProductModalC = ({ idModal, showEdit, showNew, handleClickCancelProductUpd
     return (
         <>
             <Modal show={idModal === 'editProduct' ? showEdit : showNew} style={{ opacity: '0.2 !important' }}>
-                <Modal.Header style={{ position: 'relative' }}>
+                <Modal.Header style={{ position: 'relative', height: '3em' }}>
                     <Modal.Title
-                        style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)' }}>
-                        {idModal === 'newProduct' ? 'Nuevo Producto' : `Producto: ${productInfo.name}`}
+                        title={idModal === 'newProduct' ? '' : `Producto: ${productInfo.name}`}
+                        style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', fontSize: '1.3em', overflowX: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', maxWidth: '90%' }}>
+                        {idModal === 'newProduct' ? 'Producto Nuevo' : `Producto: ${productInfo.name}`}
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
