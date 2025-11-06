@@ -8,6 +8,19 @@ import ProductModalC from '../components/ProductModalC';
 
 
 const AdminProductPage = () => {
+    const allSizes = [{ value: '', label: '--' }, { value: 'S', label: 'S' }, { value: 'M', label: 'M' },
+    { value: 'L', label: 'L' }, { value: 'XL', label: 'XL' }, { value: '2XL', label: '2XL' },
+    { value: '3XL', label: '3XL' }, { value: '4XL', label: '4XL' }, { value: '5XL', label: '5XL' },
+    { value: '6XL', label: '6XL' }, { value: '7XL', label: '7XL' }, { value: '10', label: '10' },
+    { value: '12', label: '12' }, { value: '14', label: '14' }, { value: '16', label: '16' },
+    { value: '38', label: '38' }, { value: '40', label: '40' }, { value: '42', label: '42' },
+    { value: '44', label: '44' }, { value: '46', label: '46' }, { value: '48', label: '48' },
+    { value: '50', label: '50' }, { value: '52', label: '52' }, { value: '54', label: '54' },
+    { value: '56', label: '56' }, { value: '58', label: '58' }, { value: '60', label: '60' },
+    { value: '85', label: '85' }, { value: '90', label: '90' }, { value: '95', label: '95' },
+    { value: '100', label: '100' }, { value: '105', label: '105' }, { value: '110', label: '110' },
+    { value: '115', label: '115' }, { value: '120', label: '120' }
+    ]
     const [products, setProducts] = useState([])
     const [newProductImages, setNewProductImages] = useState([])
     const [imgErrors, setImgErrors] = useState([])
@@ -39,19 +52,7 @@ const AdminProductPage = () => {
     });
     const [showNewSizeModal, setShowNewSizeModal] = useState(false);
     const [oldStockItems, setOldStockItems] = useState([])
-    const sizeOptions = [{ value: '', label: '--' }, { value: 'S', label: 'S' }, { value: 'M', label: 'M' },
-    { value: 'L', label: 'L' }, { value: 'XL', label: 'XL' }, { value: '2XL', label: '2XL' },
-    { value: '3XL', label: '3XL' }, { value: '4XL', label: '4XL' }, { value: '5XL', label: '5XL' },
-    { value: '6XL', label: '6XL' }, { value: '7XL', label: '7XL' }, { value: '10', label: '10' },
-    { value: '12', label: '12' }, { value: '14', label: '14' }, { value: '16', label: '16' },
-    { value: '38', label: '38' }, { value: '40', label: '40' }, { value: '42', label: '42' },
-    { value: '44', label: '44' }, { value: '46', label: '46' }, { value: '48', label: '48' },
-    { value: '50', label: '50' }, { value: '52', label: '52' }, { value: '54', label: '54' },
-    { value: '56', label: '56' }, { value: '58', label: '58' }, { value: '60', label: '60' },
-    { value: '85', label: '85' }, { value: '90', label: '90' }, { value: '95', label: '95' },
-    { value: '100', label: '100' }, { value: '105', label: '105' }, { value: '110', label: '110' },
-    { value: '115', label: '115' }, { value: '120', label: '120' }
-    ]
+    const [sizeOptions, setSizeOptions] = useState([])
 
     const handleCloseEdit = () => setShowEdit(false);
     const handleShowEdit = () => setShowEdit(true);
@@ -162,7 +163,7 @@ const AdminProductPage = () => {
     }
 
     const handleClickSetEditProduct = (item) => {
-        setProductInfo({name: item.name, price: item.price, description: item.description})
+        setProductInfo({ name: item.name, price: item.price, description: item.description })
         handleShowEdit()
     }
 
@@ -326,6 +327,10 @@ const AdminProductPage = () => {
     }
 
     const handleClickShowNewSizeModal = (productId, variantId) => {
+        const product = products.find(prod => prod._id === productId);
+        const variant = product.variants.find(vari => vari._id === variantId);
+        const sizesNotUsed = allSizes.filter(sizeOption => !variant.sizes.some(sizeObj => sizeObj.size === sizeOption.value.toLowerCase()));
+        setSizeOptions(sizesNotUsed);
         setProductIdState(productId)
         setVariantIdState(variantId)
         setShowNewSizeModal(true)
@@ -388,8 +393,8 @@ const AdminProductPage = () => {
                     item.stock = newStock.stock;
                     item.sizeId = newStock._id;
                     coincidencias.push(item);
+                }
             }
-        }
             if (coincidencias.length > 0) setOldStockItems(prevState => prevState.filter(item => item.productId !== idProduct || item.variantId !== idVariant));
             return coincidencias;
         }
@@ -409,6 +414,19 @@ const AdminProductPage = () => {
         }
     }
 
+    const handleClickDeleteSizeFromVariant = async (ev, productId, variantId, sizeId) => {
+        ev.preventDefault()
+        const response = confirm('Eliminar talle?')
+        if (response) {
+            try {
+                const result = await clienteAxios.delete(`/products/delSizeFromVariant/${productId}/${variantId}/${sizeId}`, configHeaders)
+                alert(result.data.msg)
+                setIsLoading(true)
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    }
 
     const filteredProducts = products.filter(product =>
         product.name.toLowerCase().includes(searchWord.toLowerCase())
@@ -592,21 +610,30 @@ const AdminProductPage = () => {
                                                                     {
                                                                         variant.sizes.length > 0 ? (
                                                                             <>
-                                                                                <div style={{ height: '19.5em', overflowY: 'auto', marginBottom: '1em' }}>
+                                                                                <Container style={{ height: '19.5em', overflowY: 'auto', marginBottom: '1em' }}>
                                                                                     {variant.sizes.map((sizeObj) => (
-                                                                                        <div key={sizeObj._id} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '.5em', gap: '1em' }}>
-                                                                                            <p style={{ width: '4em', margin: '0', textTransform: 'uppercase', marginRight: '1.5em' }}>{sizeObj.size}</p>
-                                                                                            <FormGroup>
-                                                                                                <FormControl
-                                                                                                    type="number"
-                                                                                                    style={{ width: '4em', marginLeft: '1.5em' }}
-                                                                                                    value={sizeObj.stock === 0 ? '' : sizeObj.stock}
-                                                                                                    onChange={(ev) => handleChangeStockPerSize(ev.target.value, sizeObj.stock, product._id, variant._id, sizeObj.size)}
-                                                                                                />
-                                                                                            </FormGroup>
+                                                                                        <div key={sizeObj._id} style={{ display: 'flex', justifyContent: 'space-evenly', alignItems: 'center' }}>
+                                                                                            <Col xs={8} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '.5em', gap: '1em' }}>
+                                                                                                <p style={{ width: '4em', margin: '0', textTransform: 'uppercase' }}>{sizeObj.size}</p>
+                                                                                                <FormGroup>
+                                                                                                    <FormControl
+                                                                                                        type="number"
+                                                                                                        style={{ width: '4em', marginLeft: '1.5em' }}
+                                                                                                        value={sizeObj.stock === 0 ? '' : sizeObj.stock}
+                                                                                                        onChange={(ev) => handleChangeStockPerSize(ev.target.value, sizeObj.stock, product._id, variant._id, sizeObj.size)}
+                                                                                                    />
+                                                                                                </FormGroup>
+                                                                                            </Col>
+                                                                                            <Col xs={3} style={{ marginBottom: '.5em' }}>
+                                                                                                <Button
+                                                                                                    size='sm'
+                                                                                                    variant="danger"
+                                                                                                    onClick={(ev) => handleClickDeleteSizeFromVariant(ev, product._id, variant._id, sizeObj._id)}>
+                                                                                                    x</Button>
+                                                                                            </Col>
                                                                                         </div>
                                                                                     ))}
-                                                                                </div>
+                                                                                </Container>
                                                                                 <Button
                                                                                     onClick={() => handleClickModifyStockPerSize(product._id, variant._id)}
                                                                                     variant='secondary'>Guardar Cambios</Button>

@@ -2,7 +2,7 @@ import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Dropdown } from 'react-bootstrap';
+import { Dropdown, InputGroup } from 'react-bootstrap';
 import { Button, Form, Modal } from 'react-bootstrap';
 import { useState, useEffect } from 'react';
 import 'font-awesome/css/font-awesome.min.css';
@@ -47,23 +47,18 @@ const NavbarC = () => {
 
     const handleClickCategoryPage = (ev, category) => {
         ev.preventDefault()
-        if(category === undefined) {
+        if (category === undefined) {
             navigate('/allProductsPage')
         } else {
-        navigate(`/categoryPage/${category}`);
+            navigate(`/categoryPage/${category}`);
         }
     }
 
     const handleChangeCategoryName = (ev) => {
         const name = ev.target.value
-
-        if (name.length < 4 || name.length > 30) {
-            setErrorMessage('El nombre de la categoria debe tener entre 4 y 30 caracteres')
-            return
-        } else {
+        if (name.length < 4 || name.length > 30) return setErrorMessage('El nombre de la categoria debe tener entre 4 y 30 caracteres')
             setErrorMessage('')
             setCategoryName(name)
-        }
     }
 
     const handleClickCancelNewCategory = () => {
@@ -131,13 +126,13 @@ const NavbarC = () => {
 
     return (
         <>
-            <Navbar expand="lg" className="bg-body-tertiary">
+            <Navbar expand="lg" className="bg-body-secondary">
                 <Container fluid>
                     <NavLink to="/" className={'nav-link fs-4'}>Logo</NavLink>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="me-auto">
-                            <Dropdown style={{padding: '0 1em'}} onMouseEnter={() => setShowCategory(true)} onMouseLeave={() => setShowCategory(false)} show={showCategory}>
+                            <Dropdown style={{ padding: '0 1em' }} onMouseEnter={() => setShowCategory(true)} onMouseLeave={() => setShowCategory(false)} show={showCategory}>
                                 <Dropdown.Toggle
                                     className="text-decoration-none"
                                     style={{
@@ -154,7 +149,7 @@ const NavbarC = () => {
                                 <Dropdown.Menu>
                                     {
                                         categories.map((category) => (
-                                            <div className="categoryItem" key={category.id} style={(role === 'mainAdmin' || role === 'admin') ? { display: 'flex', alignItems: 'center', minWidth: '10em', maxWidth: '12em' } : { maxWidth: '10em'}}>
+                                            <div className="categoryItem" key={category.id} style={(role === 'mainAdmin' || role === 'admin') ? { display: 'flex', alignItems: 'center', minWidth: '10em', maxWidth: '12em' } : { maxWidth: '10em' }}>
                                                 <Dropdown.Item onClick={(ev) => handleClickCategoryPage(ev, category.name)} style={role === 'mainAdmin' || role === 'admin' ? { width: '80%', textAlign: 'center', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' } : { width: '100%', textAlign: 'center', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }} title={category.name}>
                                                     {category.name}
                                                 </Dropdown.Item>
@@ -162,9 +157,9 @@ const NavbarC = () => {
                                             </div>
                                         )
                                         )}
-                                        <Dropdown.Item onClick={(ev) => handleClickCategoryPage(ev)} style={role === 'mainAdmin' || role === 'admin' ? { width: '80%', textAlign: 'center', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' } : { width: '100%', textAlign: 'center', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
-                                            Ver Todos
-                                        </Dropdown.Item>
+                                    <Dropdown.Item onClick={(ev) => handleClickCategoryPage(ev)} style={role === 'mainAdmin' || role === 'admin' ? { width: '80%', textAlign: 'center', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' } : { width: '100%', textAlign: 'center', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>
+                                        Ver Todos
+                                    </Dropdown.Item>
                                     {
                                         (role === 'mainAdmin' || role === 'admin') &&
                                         <Dropdown.Item as={Button} style={{ textDecoration: 'none', textAlign: 'center', color: 'black' }} onClick={handleShowCategoryModal}>
@@ -177,7 +172,7 @@ const NavbarC = () => {
                                         </Modal.Header>
                                         <Modal.Body>
                                             <Form>
-                                                <Form.Group className="mb-3" controlId="formBasicName" style={{ height: '5em' }}>
+                                                <Form.Group className="mb-3" style={{ height: '5em' }}>
                                                     <Form.Label>Nombre</Form.Label>
                                                     <Form.Control
                                                         type="text"
@@ -204,13 +199,24 @@ const NavbarC = () => {
                                 </Dropdown.Menu>
                             </Dropdown>
                         </Nav>
-                        <Form className="ms-auto">
-                            <Form.Group style={{ display: 'flex', justifyContent: 'end', margin: '0 .7em', border: 'none' }} controlId='formBasicSearch'>
-                                <Form.Control type='text' placeholder='Buscar' value={toSearch} name='keyWord' style={{ border: 'none', borderRadius: '0' }} onChange={handleChangeSearchKeyWord} />
-                                <Button style={{ width: '3em', backgroundColor: 'white', border: 'none', borderRadius: '0' }} onClick={handleClickSearch}>
-                                    <i style={{color: 'black'}} className='fa fa-search'></i>
+                        <Form className="ms-auto mx-5">
+                            <InputGroup style={{ margin: '0 .7em' }}>
+                                <Form.Control
+                                    type='text'
+                                    placeholder='Buscar'
+                                    value={toSearch}
+                                    name='keyWord'
+                                    onChange={handleChangeSearchKeyWord}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter') {
+                                            e.preventDefault();
+                                            handleClickSearch();
+                                        }
+                                    }} />
+                                <Button variant='light' style={{ width: '3em' }} onClick={handleClickSearch}>
+                                    <i style={{ color: 'black' }} className='fa fa-search'></i>
                                 </Button>
-                            </Form.Group>
+                            </InputGroup>
                         </Form>
                         {
                             !token ?
