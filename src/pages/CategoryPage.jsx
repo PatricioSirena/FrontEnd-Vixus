@@ -1,15 +1,17 @@
-import { useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { useParams } from "react-router-dom"
 import clienteAxios, { configHeaders } from "../helpers/axios"
 import { Col, Container, Dropdown, Row } from "react-bootstrap"
 import CardC from "../components/CardC"
 import Spinner from 'react-bootstrap/Spinner';
+import ProductFilterC from "../components/ProductFilterC"
 
 const CategoryPage = () => {
     const params = useParams()
     const [isLoading, setIsLoading] = useState(true)
     const [reload, setReload] = useState(false)
     const [categoryProducts, setCategoryProducts] = useState([])
+    const [filteredProducts , setFilteredProducts] = useState(categoryProducts)
     const [nonCategoryProducts, setNonCategoryProducts] = useState([])
     const [showCategory, setShowCategory] = useState(false);
     const role = JSON.parse(sessionStorage.getItem('role'));
@@ -73,6 +75,10 @@ const CategoryPage = () => {
         }, 600);
     }
 
+    const handleFilteredProducts = useCallback((productsFiltered) => {
+        setFilteredProducts(productsFiltered)
+    }, [])
+
     useEffect(() => {
         const getCategoryProducts = async () => {
             setIsLoading(true)
@@ -95,7 +101,12 @@ const CategoryPage = () => {
     }, [params.categoryName, reload])
 
     return (
-        <>
+        <Container fluid>
+            <Row>
+            <Col lg={2}>
+            <ProductFilterC products={categoryProducts} onFilteredProducts={handleFilteredProducts}/>
+            </Col>
+            <Col lg={10}>
             {
                 isLoading ?
                     <div style={{ display: 'flex', justifyContent: 'center', height: '70vh', alignItems: 'center' }}>
@@ -105,7 +116,7 @@ const CategoryPage = () => {
                     </div>
                     :
                     <>
-                        <Dropdown>
+                        <Dropdown style={{margin: '2em 0'}}>
                             <Dropdown.Toggle
                                 className="text-decoration-none"
                                 style={{
@@ -134,7 +145,7 @@ const CategoryPage = () => {
                             </Dropdown.Menu>
                         </Dropdown>
                         <div style={{ height: '70vh', alignItems: 'center' }}>
-                            <h1 style={{ textAlign: 'center', marginTop: '1em' }}>Productos de la categoría: {params.categoryName}</h1>
+                            <h1 style={{ textAlign: 'center' }}>Productos de la categoría: {params.categoryName}</h1>
                             {
                                 (role === 'mainAdmin' || role === 'admin') &&
                                 <Dropdown onMouseEnter={() => setShowCategory(true)} onMouseLeave={() => setShowCategory(false)} show={showCategory}>
@@ -169,22 +180,34 @@ const CategoryPage = () => {
                             <Container>
                                 <Row>
                                     {
-                                        categoryProducts.map((product) => (
-                                            <Col key={product._id} sm={12} md={6} xl={3} style={{ marginTop: '1.7em' }}>
-                                                <div className="delProdCategory" style={role === 'user' || role === null ? { display: 'none' } : { display: 'flex', justifyContent: 'end', marginRight: '3em' }}>
-                                                    <span className="btn btn-dark" title={`Eliminar ${product.name} de esta categoria`} onClick={(ev) => handleClickDelCategoryFormProd(ev, product._id, product.name)}>X</span>
-                                                </div>
-                                                <CardC key={product._id} cardId={'cardCategory'} productId={product._id}
-                                                    productName={product.name} productPrice={product.price}
-                                                    mainImage={product.mainPicture} productStock={product.quantity} />
+                                        categoryProducts.length === 0 ? (
+                                            <Col sm={12} style={{ display: 'flex', justifyContent: 'center', marginTop: '4em' }}>
+                                                <h4>No se encontraron productos en esta categoría.</h4>
                                             </Col>
-                                        ))}
+                                        ) :
+                                        filteredProducts.length > 0 ? (
+                                            filteredProducts.map((product) => (
+                                                <Col key={product._id} sm={12} md={6} xl={3} style={{ marginTop: '1.7em' }}>
+                                                    <div className="delProdCategory" style={role === 'user' || role === null ? { display: 'none' } : { display: 'flex', justifyContent: 'end', marginRight: '3em' }}>
+                                                        <span className="btn btn-dark" title={`Eliminar ${product.name} de esta categoria`} onClick={(ev) => handleClickDelCategoryFormProd(ev, product._id, product.name)}>X</span>
+                                                    </div>
+                                                    <CardC key={product._id} cardId={'cardCategory'} productId={product._id}
+                                                        productName={product.name} productPrice={product.price} />
+                                                </Col>
+                                            ))
+                                        ) : (
+                                            <Col sm={12} style={{ marginTop: '1.7em' }}>
+                                                <h4>No se encontraron productos que coincidan con los filtros aplicados.</h4>
+                                            </Col>
+                                        )}
                                 </Row>
                             </Container>
                         </div>
                     </>
             }
-        </>
+            </Col>
+            </Row>
+        </Container>
     )
 }
 

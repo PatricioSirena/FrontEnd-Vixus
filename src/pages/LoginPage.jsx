@@ -3,11 +3,9 @@ import FormC from "../components/FormC"
 
 const LoginPage = () => {
     return (
-        <>
         <Container>
         <FormC idPage={'login'} />
         </Container>
-        </>
     )
 }
 
