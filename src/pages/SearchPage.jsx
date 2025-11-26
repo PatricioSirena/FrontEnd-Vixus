@@ -1,6 +1,6 @@
 import { useParams } from "react-router-dom"
 import clienteAxios from "../helpers/axios"
-import React, { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react"
 import { Col, Container, Dropdown, Row } from "react-bootstrap"
 import CardC from "../components/CardC"
 import ProductFilterC from "../components/ProductFilterC"
@@ -119,8 +119,9 @@ const SearchPage = () => {
                                             filteredProducts.length > 0 ? (
                                                 filteredProducts.map((product) => (
                                                     <Col key={product._id} sm={12} md={6} xl={3} style={{ marginTop: '1.7em' }}>
-                                                        <CardC key={product._id} cardId={'cardCategory'} productId={product._id}
-                                                            productName={product.name} productPrice={product.price} />
+                                                        <CardC key={product._id} cardId={'searchCard'} productId={product._id}
+                                                            productName={product.name} productPrice={product.price} 
+                                                            mainImage={product.mainPicture}/>
                                                     </Col>
                                                 ))
                                             ) : (

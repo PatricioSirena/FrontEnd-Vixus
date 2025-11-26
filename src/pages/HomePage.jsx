@@ -15,7 +15,6 @@ const HomePage = () => {
         setIsLoading(false)
     }
 
-
     const infoCards = [
         {
             id: 1, link: 'https://res.cloudinary.com/dkp3sew2y/image/upload/fl_preserve_transparency/v1731333269/Descuento_gmyhiq.jpg?_s=public-apps',
@@ -52,9 +51,9 @@ const HomePage = () => {
             <Container className="latestProductsContainer">
                     {
                         latestProducts.map(product =>
-                                <CardC key={product._id} cardId={'productCard'} productId={product._id} 
+                                <CardC key={product._id} cardId={'homeCard'} productId={product._id} 
                                 productName={product.name} productPrice={product.price}
-                                mainImage={product.mainPicture} productStock={product.quantity}/>
+                                mainImage={product.mainPicture} />
                         )
                     }
             </Container>

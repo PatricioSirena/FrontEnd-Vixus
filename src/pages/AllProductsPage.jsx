@@ -105,7 +105,7 @@ const AllProductsPage = () => {
                                             filteredProducts?.length > 0 ? (
                                                 filteredProducts.map((product) => (
                                                     <Col key={product._id} sm={12} md={6} xl={3} style={{ marginTop: '1.7em' }}>
-                                                        <CardC key={product._id} cardId={'cardCategory'} productId={product._id}
+                                                        <CardC key={product._id} cardId={'allProductCard'} productId={product._id}
                                                             productName={product.name} productPrice={product.price} />
                                                     </Col>
                                                 ))

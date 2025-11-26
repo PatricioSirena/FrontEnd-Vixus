@@ -90,7 +90,7 @@ const AdminProductPage = () => {
                 setNewProductImages(prevState => [...prevState, newImage])
             }
         } catch (error) {
-            alert(error.message);
+            alert(error.response.data.message);
         } finally {
             if (fileInputRefs.current[variantId]) {
                 fileInputRefs.current[variantId].value = null;
@@ -139,24 +139,38 @@ const AdminProductPage = () => {
     }
 
     const handleClickDelProductImage = async (imageUrl) => {
-        try {
-            const imgInDb = products.find(product => product.variants.some(variant => variant.galery.some(img => img.imageUrl === imageUrl)))
-            if (!imgInDb) {
-                const result = await clienteAxios.post('/products/deleteFromCloud', { url: imageUrl }, configHeaders)
+        const response = confirm('Eliminar imagen?')
+        if (response) {
+            try {
+                const imgInDb = products.find(product => product.variants.some(variant => variant.galery.some(img => img.imageUrl === imageUrl)))
+                if (!imgInDb) {
+                    const result = await clienteAxios.post('/products/deleteFromCloud', { url: imageUrl }, configHeaders)
+                    if (result.status === 400) alert('Error al eliminar la imagen, intente nuevamente.')
+                    if (result.status === 200) alert('Imagen eliminada correctamente.')
+                    setNewProductImages(prevState => prevState.filter(img => img !== imageUrl))
+                    return
+                }
+                const productVariant = imgInDb.variants.find(variant => variant.galery.some(img => img.imageUrl === imageUrl))
+                const imgId = productVariant.galery.find(img => img.imageUrl === imageUrl)._id
+                if (!productVariant || !imgId) return alert('Tuvimos un error inesperado, intenta nuevamente.')
+                const result = await clienteAxios.delete(`/products/delProductImage/${imgInDb._id}/${productVariant._id}/${imgId}`, configHeaders)
                 if (result.status === 400) alert('Error al eliminar la imagen, intente nuevamente.')
-                if (result.status === 200) alert('Imagen eliminada correctamente.')
-                setNewProductImages(prevState => prevState.filter(img => img !== imageUrl))
-                return
+                if (result.status === 404) alert('No encontramos el producto en la base de datos.')
+                alert('Imagen eliminada correctamente.')
+                setIsLoading(true)
+                await getStockProducts()
+            } catch (error) {
+                console.log(error);
             }
-            const productVariant = imgInDb.variants.find(variant => variant.galery.some(img => img.imageUrl === imageUrl))
-            const imgId = productVariant.galery.find(img => img.imageUrl === imageUrl)._id
-            if (!productVariant || !imgId) return alert('Tuvimos un error inesperado, intenta nuevamente.')
-            const result = await clienteAxios.delete(`/products/delProductImage/${imgInDb._id}/${productVariant._id}/${imgId}`, configHeaders)
-            if (result.status === 400) alert('Error al eliminar la imagen, intente nuevamente.')
-            if (result.status === 404) alert('No encontramos el producto en la base de datos.')
-            alert('Imagen eliminada correctamente.')
+        }
+    }
+
+    const selectMainPicture = async (idProd, imageUrl) => {
+        if (!idProd || !imageUrl) return alert('Error al seleccionar la imagen principal, intente nuevamente.');
+        try {
+            const result = await clienteAxios.post('/products/setMainProductImage', {productId: idProd, imageUrl}, configHeaders)
+            alert(result.data.msg)
             setIsLoading(true)
-            await getStockProducts()
         } catch (error) {
             console.log(error);
         }
@@ -590,7 +604,12 @@ const AdminProductPage = () => {
                                                         </div>
                                                         <Row style={{ padding: '.5em 0' }}>
                                                             <Col xs={12} md={7}>
-                                                                <GaleryC galery={variant.galery} deleteImageFunction={handleClickDelProductImage} />
+                                                                <GaleryC 
+                                                                galery={variant.galery}
+                                                                productId={product._id}
+                                                                deleteImageFunction={handleClickDelProductImage} 
+                                                                selectMainImage={selectMainPicture}
+                                                                mainPicture={product.mainPicture}/>
                                                                 <FormGroup style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginLeft: '16%' }}>
                                                                     <FormControl
                                                                         type="file"

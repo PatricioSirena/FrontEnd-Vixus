@@ -4,7 +4,7 @@ import PropTypes from 'prop-types'
 import clienteAxios, { configHeaders } from '../helpers/axios';
 
 
-const CardC = ({ cardId, imgLink, infoCardtext, productId, productName, productPrice, mainImage, setIsLoadingHook, productStock}) => {
+const CardC = ({ cardId, imgLink, infoCardtext, productId, productName, productPrice, mainImage, setIsLoadingHook, delProdFromCategory }) => {
 
     const role = JSON.parse(sessionStorage.getItem('role'));
     
@@ -42,22 +42,30 @@ const CardC = ({ cardId, imgLink, infoCardtext, productId, productName, productP
                             </Card.Body>
                         </Card>
                         :
-                        <Card style={cardId === 'cardCategory' && role === 'mainAdmin' || role === 'admin' ? { width: '11rem', margin: '.5em 2em 2em 2em' } : { width: '11rem', margin: '2rem' }}>
-                                <Card.Img
-                                    title={productName}
-                                    variant='top'
-                                    src={mainImage ? mainImage : ''}
-                                    className="card-img"
-                                    style={{ border: 'none', height: '200px' }}
-                                />
+                        <Card style={{ width: '11rem', margin: '.5em 2em 2em 2em', position: 'relative' }}>
+                            <div style={cardId === 'categoryCard' && (role === 'admin' || role === 'mainAdmin') ? { position: 'absolute', top: '.4em', right: '.5em', zIndex: 10 } : { display: 'none' }}>
+                                <button style={{ border: 'none', backgroundColor: 'transparent', color: 'grey', fontSize: '1.2em', fontWeight: 'bolder' }} title={`Eliminar ${productName} de esta categoria`} onClick={(ev) => delProdFromCategory(ev, productId, productName)}>X</button>
+                            </div>
+                            <Card.Img
+                                title={productName}
+                                variant='top'
+                                src={mainImage ? mainImage : ''}
+                                className="card-img"
+                                style={{
+                                    height: '200px',
+                                    width: '100%',
+                                    objectFit: 'cover',
+                                    padding: '.6em'
+                                }}
+                            />
                             <Card.Body style={{ padding: '.5rem' }}>
                                 <Card.Title title={productName} style={{ fontSize: 'medium', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{productName}</Card.Title>
                                 <Card.Text style={{ margin: '.5rem' }}>
                                     {productPrice}
-                                    {
-                                        productStock <= 0 &&
-                                        <span style={{ fontSize: 'x-small', marginLeft: '3em' }}>Sin stock</span>
-                                    }
+                                    {/* {
+                productStock <= 0 &&
+                <span style={{ fontSize: 'x-small', marginLeft: '3em' }}>Sin stock</span>
+            } */}
                                 </Card.Text>
                                 <div className="cardButtons mb-2 mx-1" style={{ display: 'flex', justifyContent: 'space-between' }}>
                                     <Link to={`/product/${productId}`} className='btn btn-dark' style={{ fontSize: 'x-small', padding: '6px' }} variant="primary">Ver Producto</Link>
@@ -83,7 +91,7 @@ CardC.propTypes = {
     mainImage: PropTypes.string,
     setIsLoadingHook: PropTypes.func,
     getFavoritesFunction: PropTypes.func,
-    productStock: PropTypes.number
+    delProdFromCategory: PropTypes.func
 }
 
 export default CardC

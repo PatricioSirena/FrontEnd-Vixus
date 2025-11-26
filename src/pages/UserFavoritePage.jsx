@@ -36,8 +36,8 @@ const UserFavoritePage = () => {
                 <Row>
                     { favProducts.map(product =>
                         <Col key={product._id}>
-                            <CardC cardId={'favPage'} productId={product._id} productName={product.name} productPrice={product.price}
-                            mainImage={product.mainPicture} setIsLoadingHook={setIsLoading} productStock={product.quantity}/>
+                            <CardC cardId={'favoriteCard'} productId={product._id} productName={product.name} productPrice={product.price}
+                            mainImage={product.mainPicture} setIsLoadingHook={setIsLoading}/>
                         </Col>
                     )
                     }

@@ -188,11 +188,9 @@ const CategoryPage = () => {
                                         filteredProducts.length > 0 ? (
                                             filteredProducts.map((product) => (
                                                 <Col key={product._id} sm={12} md={6} xl={3} style={{ marginTop: '1.7em' }}>
-                                                    <div className="delProdCategory" style={role === 'user' || role === null ? { display: 'none' } : { display: 'flex', justifyContent: 'end', marginRight: '3em' }}>
-                                                        <span className="btn btn-dark" title={`Eliminar ${product.name} de esta categoria`} onClick={(ev) => handleClickDelCategoryFormProd(ev, product._id, product.name)}>X</span>
-                                                    </div>
-                                                    <CardC key={product._id} cardId={'cardCategory'} productId={product._id}
-                                                        productName={product.name} productPrice={product.price} />
+                                                    <CardC key={product._id} cardId={'categoryCard'} productId={product._id}
+                                                        productName={product.name} productPrice={product.price}  
+                                                        mainImage={product.mainPicture} delProdFromCategory={handleClickDelCategoryFormProd}/>
                                                 </Col>
                                             ))
                                         ) : (
