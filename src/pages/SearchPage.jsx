@@ -24,8 +24,12 @@ const SearchPage = () => {
 
     const getSearchedProducts = useCallback(async () => {
         setIsLoading(true)
+        const activeProducts = []
         const result = await clienteAxios.get(`/products/search/${params.toSearch}`)
-        setSearchProducts(result.data)
+        for (let product of result.data) {
+            if (product.active) activeProducts.push(product)
+        }
+        setSearchProducts(activeProducts)
         setTimeout(() => {
             setIsLoading(false)
         }, 600);
@@ -65,7 +69,7 @@ const SearchPage = () => {
     }, [getSearchedProducts, params.toSearch])
 
     return (
-        <Container fluid>
+        <Container fluid style={{ margin: '1.5em 0' }}>
             <Row>
                 <Col xl={2}>
                     <ProductFilterC products={searchProducts} onFilteredProducts={handleFilteredProducts} />
@@ -79,7 +83,7 @@ const SearchPage = () => {
                         </div>
                         :
                         <>
-                            <Dropdown style={{ margin: '2em 0' }}>
+                            <Dropdown>
                                 <Dropdown.Toggle
                                     className="text-decoration-none"
                                     style={{
@@ -120,8 +124,8 @@ const SearchPage = () => {
                                                 filteredProducts.map((product) => (
                                                     <Col key={product._id} sm={12} md={6} xl={3} style={{ marginTop: '1.7em' }}>
                                                         <CardC key={product._id} cardId={'searchCard'} productId={product._id}
-                                                            productName={product.name} productPrice={product.price} 
-                                                            mainImage={product.mainPicture}/>
+                                                            productName={product.name} productPrice={product.price}
+                                                            mainImage={product.mainPicture} soldOut={product.outOfStock}/>
                                                     </Col>
                                                 ))
                                             ) : (

@@ -203,7 +203,7 @@ const NavbarC = () => {
                             <InputGroup style={{ margin: '0 .7em' }}>
                                 <Form.Control
                                     type='text'
-                                    placeholder='Buscar'
+                                    placeholder='Buscar Producto'
                                     value={toSearch}
                                     name='keyWord'
                                     onChange={handleChangeSearchKeyWord}

@@ -4,10 +4,10 @@ import PropTypes from 'prop-types'
 import clienteAxios, { configHeaders } from '../helpers/axios';
 
 
-const CardC = ({ cardId, imgLink, infoCardtext, productId, productName, productPrice, mainImage, setIsLoadingHook, delProdFromCategory }) => {
+const CardC = ({ cardId, imgLink, infoCardtext, productId, productName, productPrice, mainImage, setIsLoadingHook, delProdFromCategory, soldOut }) => {
 
     const role = JSON.parse(sessionStorage.getItem('role'));
-    
+
     const handleClickDelFromFav = async () => {
         try {
             const result = await clienteAxios.post(`/products/delFromFavorite/${productId}`, {}, configHeaders)
@@ -62,10 +62,10 @@ const CardC = ({ cardId, imgLink, infoCardtext, productId, productName, productP
                                 <Card.Title title={productName} style={{ fontSize: 'medium', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis' }}>{productName}</Card.Title>
                                 <Card.Text style={{ margin: '.5rem' }}>
                                     {productPrice}
-                                    {/* {
-                productStock <= 0 &&
-                <span style={{ fontSize: 'x-small', marginLeft: '3em' }}>Sin stock</span>
-            } */}
+                                    {
+                                        soldOut === true &&
+                                        <span style={{ fontSize: 'x-small', marginLeft: '3em' }}>Sin stock</span>
+                                    }
                                 </Card.Text>
                                 <div className="cardButtons mb-2 mx-1" style={{ display: 'flex', justifyContent: 'space-between' }}>
                                     <Link to={`/product/${productId}`} className='btn btn-dark' style={{ fontSize: 'x-small', padding: '6px' }} variant="primary">Ver Producto</Link>
@@ -91,7 +91,8 @@ CardC.propTypes = {
     mainImage: PropTypes.string,
     setIsLoadingHook: PropTypes.func,
     getFavoritesFunction: PropTypes.func,
-    delProdFromCategory: PropTypes.func
+    delProdFromCategory: PropTypes.func,
+    soldOut: PropTypes.bool
 }
 
 export default CardC

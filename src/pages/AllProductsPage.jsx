@@ -44,19 +44,25 @@ const AllProductsPage = () => {
     useEffect(() => {
         const getProducts = async () => {
             try {
+                const activeProducts = []
                 const response = await clienteAxios.get('/products')
-                setAllProducts(response.data)
+                for (let product of response.data) {
+                    if (product.active) activeProducts.push(product)
+                }
+                setAllProducts(activeProducts)
             } catch (error) {
                 alert(error.response.data.msg)
             } finally {
-                setIsLoading(false)
+                setTimeout(() => {
+                    setIsLoading(false)
+                }, 600);
             }
         }
         getProducts()
     }, [])
 
     return (
-        <Container fluid>
+        <Container fluid style={{ margin: '1.5em 0' }}>
             <Row>
                 <Col lg={2}>
                     <ProductFilterC products={allProducts} onFilteredProducts={handleFilteredProducts} />
@@ -102,18 +108,25 @@ const AllProductsPage = () => {
                                 <Container>
                                     <Row>
                                         {
-                                            filteredProducts?.length > 0 ? (
-                                                filteredProducts.map((product) => (
-                                                    <Col key={product._id} sm={12} md={6} xl={3} style={{ marginTop: '1.7em' }}>
-                                                        <CardC key={product._id} cardId={'allProductCard'} productId={product._id}
-                                                            productName={product.name} productPrice={product.price} />
-                                                    </Col>
-                                                ))
-                                            ) : (
+                                            allProducts.length === 0 ?
                                                 <Col sm={12} style={{ marginTop: '1.7em' }}>
-                                                    <h4>No se encontraron productos que coincidan con los filtros aplicados.</h4>
+                                                    <h4>No hay productos disponibles en este momento.</h4>
                                                 </Col>
-                                            )}
+                                                :
+                                                filteredProducts?.length > 0 ? (
+                                                    filteredProducts.map((product) => (
+                                                        <Col key={product._id} sm={12} md={6} xl={3} style={{ marginTop: '1.7em' }}>
+                                                            <CardC key={product._id} cardId={'allProductCard'} productId={product._id}
+                                                                productName={product.name} productPrice={product.price} mainImage={product.mainPicture} 
+                                                                soldOut={product.outOfStock} />
+                                                        </Col>
+                                                    ))
+                                                ) : (
+                                                    <Col sm={12} style={{ marginTop: '1.7em' }}>
+                                                        <h4>No se encontraron productos que coincidan con los filtros aplicados.</h4>
+                                                    </Col>
+                                                )
+                                        }
                                     </Row>
                                 </Container>
                             </>

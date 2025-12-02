@@ -10,8 +10,12 @@ const HomePage = () => {
     const [isLoading, setIsLoading] = useState(true)
 
     const getLatestProducts = async () => {
+        const activeProducts = []
         const result = await clienteAxios.get('/products/getUltimateProducts')
-        setLatestProducts(result.data);
+        for (let product of result.data) {
+            if (product.active) activeProducts.push(product)
+        }
+        setLatestProducts(activeProducts);
         setIsLoading(false)
     }
 
@@ -46,16 +50,16 @@ const HomePage = () => {
                 </Row>
             </Container>
             <Container fluid className="mx-5">
-            <CardC cardId={'cardLinks'} />
+                <CardC cardId={'cardLinks'} />
             </Container>
             <Container className="latestProductsContainer">
-                    {
-                        latestProducts.map(product =>
-                                <CardC key={product._id} cardId={'homeCard'} productId={product._id} 
-                                productName={product.name} productPrice={product.price}
-                                mainImage={product.mainPicture} />
-                        )
-                    }
+                {
+                    latestProducts.map(product =>
+                        <CardC key={product._id} cardId={'homeCard'} productId={product._id}
+                            productName={product.name} productPrice={product.price}
+                            mainImage={product.mainPicture} soldOut={product.outOfStock}/>
+                    )
+                }
             </Container>
         </>
     )
