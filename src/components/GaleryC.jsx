@@ -3,7 +3,7 @@ import { Button, Col, Container, Dropdown, Row } from "react-bootstrap"
 import PropTypes from 'prop-types'
 import '../styles/GaleryCStyle.css'
 
-const GaleryC = ({ galery, productId, deleteImageFunction, selectMainImage, mainPicture }) => {
+const GaleryC = ({ idPage,  galery, productId, deleteImageFunction, selectMainImage, mainPicture }) => {
     const [imgToShow, setImgToShow] = useState('')
 
     const handleClickSelectImage = (idImage) => {
@@ -17,7 +17,7 @@ const GaleryC = ({ galery, productId, deleteImageFunction, selectMainImage, main
     }
 
     useEffect(() => {
-        if (!galery.some(image => image.imageUrl === imgToShow)) {
+        if (galery !== undefined && !galery.some(image => image.imageUrl === imgToShow)) {
             setImgToShow(galery[0]?.imageUrl || '')
         }
     }, [galery, imgToShow, productId])
@@ -25,7 +25,7 @@ const GaleryC = ({ galery, productId, deleteImageFunction, selectMainImage, main
     return (
         <Container>
             {
-                galery.length > 0 ?
+                galery?.length > 0 ?
                     <Row style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                         <Col sm={2} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', overflowY: 'auto', height: '25em' }}>
                             {
@@ -33,14 +33,14 @@ const GaleryC = ({ galery, productId, deleteImageFunction, selectMainImage, main
                                     <Button key={image._id} onClick={() => handleClickSelectImage(image._id)} style={{ width: '4.2em', height: '4.2em', marginBottom: '1em', padding: '0', backgroundColor: 'transparent', border: 'none', position: 'relative' }}>
                                         <img src={image.imageUrl} style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
                                         {image.imageUrl === mainPicture && (
-                                            <i className="bi bi-star-fill" style={{ position: 'absolute', top: '.1em', left: '.5em', color: 'gold', fontSize: '0.7em', zIndex: 1 }}></i>
+                                            <i className="bi bi-star-fill" style={idPage === 'productPage' ? {display: 'none'} : { position: 'absolute', top: '.1em', left: '.5em', color: 'gold', fontSize: '0.7em', zIndex: 1 }}></i>
                                         )}
                                     </Button>
                                 ))
                             }
                         </Col>
                         <Col sm={10} style={{ width: '22em', height: '25em', position: 'relative' }}>
-                            <Dropdown>
+                            <Dropdown style={ idPage === 'productPage' ? {display: 'none'} : {}}>
                                 <Dropdown.Toggle
                                     as={'button'}
                                     // variant="link"
@@ -68,6 +68,7 @@ const GaleryC = ({ galery, productId, deleteImageFunction, selectMainImage, main
 }
 
 GaleryC.propTypes = {
+    idPage: PropTypes.string,
     galery: PropTypes.array,
     productId: PropTypes.string,
     deleteImageFunction: PropTypes.func,
