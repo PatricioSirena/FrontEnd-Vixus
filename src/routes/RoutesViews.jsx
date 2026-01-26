@@ -54,7 +54,7 @@ const RoutesViews = () => {
                 <Route path="/aboutUs" element={<AboutUsPage />} />
                 <Route path="/searchPage/:toSearch" element={<SearchPage />} />
                 <Route path="/categoryPage/:categoryName" element={<CategoryPage/>} />
-                <Route path="/product/:productId" element={<ProductPage />} />
+                <Route path="/product/:productId/:variantId?" element={<ProductPage />} />
                 <Route path="/allProductsPage" element={<AllProductsPage />} />
                 <Route path="*" element={<ErrorPage />} />
             </Routes>

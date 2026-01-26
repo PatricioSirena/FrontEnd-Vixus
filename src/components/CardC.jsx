@@ -4,9 +4,10 @@ import PropTypes from 'prop-types'
 import clienteAxios, { configHeaders } from '../helpers/axios';
 
 
-const CardC = ({ cardId, imgLink, infoCardtext, productId, productName, productPrice, mainImage, setIsLoadingHook, delProdFromCategory, soldOut }) => {
+const CardC = ({ cardId, imgLink, infoCardtext, productId, faVariantId, productName, productPrice, mainImage, setIsLoadingHook, delProdFromCategory, soldOut }) => {
 
     const role = JSON.parse(sessionStorage.getItem('role'));
+    const productPath = faVariantId && faVariantId !== "undefined" ? `/product/${productId}/${faVariantId}` : `/product/${productId}`;
 
     const handleClickDelFromFav = async () => {
         try {
@@ -68,9 +69,9 @@ const CardC = ({ cardId, imgLink, infoCardtext, productId, productName, productP
                                     }
                                 </Card.Text>
                                 <div className="cardButtons mb-2 mx-1" style={{ display: 'flex', justifyContent: 'space-between' }}>
-                                    <Link to={`/product/${productId}`} className='btn btn-dark' style={{ fontSize: 'x-small', padding: '6px' }} variant="primary">Ver Producto</Link>
+                                    <Link to={productPath} className='btn btn-dark' style={{ fontSize: 'x-small', padding: '6px' }} variant="primary">Ver Producto</Link>
                                     {
-                                        cardId === 'favPage' &&
+                                        cardId === 'favoriteCard' &&
                                         <Button style={{ fontSize: 'x-small', padding: '6px' }} onClick={() => handleClickDelFromFav(productId)}>Borrar Fav</Button>
                                     }
                                 </div>
@@ -86,6 +87,7 @@ CardC.propTypes = {
     imgLink: PropTypes.string,
     infoCardtext: PropTypes.string,
     productId: PropTypes.string,
+    faVariantId: PropTypes.string,
     productName: PropTypes.string,
     productPrice: PropTypes.number,
     mainImage: PropTypes.string,

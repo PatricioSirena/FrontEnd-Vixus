@@ -13,8 +13,11 @@ const UserFavoritePage = () => {
             const idsResult = await clienteAxios.get(`/products/getFavorites`, configHeaders)
             const productsIds = idsResult.data.products
             for (const item of productsIds) {
-                const productresult = await clienteAxios.get(`/products/${item}`, configHeaders)
+                const productresult = await clienteAxios.get(`/products/${item.idProduct}`, configHeaders)
                 const product = productresult.data
+                const firstVariantImage = product.variants.find((v) => v._id === item.variantId).galery[0].imageUrl
+                product.mainPicture = firstVariantImage
+                product.favoriteVariantId = item.variantId
                 arrayFav.push(product)
             }
             setFavProducts(arrayFav)
@@ -25,7 +28,7 @@ const UserFavoritePage = () => {
     }
 
     useEffect(() => {
-        if(isLoading){
+        if (isLoading) {
             getFavorites()
         }
     }, [isLoading])
@@ -34,10 +37,10 @@ const UserFavoritePage = () => {
         <>
             <Container>
                 <Row>
-                    { favProducts.map(product =>
-                        <Col key={product._id}>
-                            <CardC cardId={'favoriteCard'} productId={product._id} productName={product.name} productPrice={product.price}
-                            mainImage={product.mainPicture} setIsLoadingHook={setIsLoading}/>
+                    {favProducts.map(product =>
+                        <Col key={product.favoriteVariantId}>
+                            <CardC cardId={'favoriteCard'} productId={product._id} faVariantId={product.favoriteVariantId} productName={product.name} productPrice={product.price}
+                                mainImage={product.mainPicture} setIsLoadingHook={setIsLoading} />
                         </Col>
                     )
                     }

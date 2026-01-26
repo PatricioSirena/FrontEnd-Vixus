@@ -11,7 +11,7 @@ const ProductPage = () => {
     const [isFavorite, setIsFavorite] = useState(false)
     const [product, setProduct] = useState({})
     const [userFavoritesProducts, setUserFavoritesProducts] = useState([])
-    const [selectedVariant, setSelectedVariant] = useState()
+    const [selectedVariant, setSelectedVariant] = useState(null)
     const [selectedSize, setSelectedSize] = useState()
     const [availableSizes, setAvailableSizes] = useState([])
     const storageRole = JSON.parse(sessionStorage.getItem('role'))
@@ -26,17 +26,23 @@ const ProductPage = () => {
                     ...variant,
                     color: variant.color.charAt(0).toUpperCase() + variant.color.slice(1)
                 }))
-            };
+            };         
             setProduct(productWithUpperCaseVariants);
-            setSelectedVariant(productWithUpperCaseVariants.variants[0])
-            const upperCaseSizes = productWithUpperCaseVariants.variants[0].sizes.map(s => ({ ...s, size: s.size.toUpperCase() }))
-            console.log(upperCaseSizes);
-            setAvailableSizes(upperCaseSizes)
+            if (params.variantId === undefined) {
+                setSelectedVariant(productWithUpperCaseVariants.variants[0])
+                const upperCaseSizes = productWithUpperCaseVariants.variants[0].sizes.map(s => ({ ...s, size: s.size.toUpperCase()}))
+                setAvailableSizes(upperCaseSizes)
+            } else {
+                const favoriteVariant = productWithUpperCaseVariants.variants.find((v) => v._id === params.variantId)
+                setSelectedVariant(favoriteVariant)                
+                const upperCaseSizes = favoriteVariant.sizes.map(s => ({ ...s, size: s.size.toUpperCase() }))
+                setAvailableSizes(upperCaseSizes)
+            }
             setIsLoading(false)
         } catch (error) {
             console.log(error);
         }
-    }, [params.productId])
+    }, [params.productId, params.variantId])
 
     const getFavorites = useCallback(async () => {
         if (storageRole === 'user') {
@@ -60,7 +66,7 @@ const ProductPage = () => {
 
     const handleClickAddToCart = async () => {
         try {
-            const result = await clienteAxios.post('/products/addToCart', {productId: product._id, variantId: selectedVariant._id, sizeId: selectedSize._id}, configHeaders)
+            const result = await clienteAxios.post('/products/addToCart', { productId: product._id, variantId: selectedVariant._id, sizeId: selectedSize._id }, configHeaders)
             alert(result.data.msg);
             setIsLoading(true)
         } catch (error) {
@@ -165,9 +171,9 @@ const ProductPage = () => {
                                     </Dropdown.Toggle>
                                     <Dropdown.Menu>
                                         {
-                                                availableSizes.map((s) => (
-                                                    <Dropdown.Item as={'button'} disabled={s.stock <= 0 ? true : false} onClick={() => setSelectedSize(s)} key={s._id}>{s.size}</Dropdown.Item>
-                                                ))
+                                            availableSizes.map((s) => (
+                                                <Dropdown.Item as={'button'} disabled={s.stock <= 0 ? true : false} onClick={() => setSelectedSize(s)} key={s._id}>{s.size}</Dropdown.Item>
+                                            ))
                                         }
                                     </Dropdown.Menu>
                                 </Dropdown>
